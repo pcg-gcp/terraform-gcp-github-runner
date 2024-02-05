@@ -39,14 +39,28 @@ func main() {
 		logLevel = slog.LevelDebug
 	}
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: logLevel,
+		AddSource: true,
+		Level:     logLevel,
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+			switch a.Key {
+			case slog.MessageKey:
+				a.Key = "message"
+			case slog.SourceKey:
+				a.Key = "logging.googleapis.com/sourceLocation"
+			case slog.LevelKey:
+				a.Key = "severity"
+			}
+			return a
+		},
 	})))
 	s := GitHubEventMonitor{
 		webhookSecretKey: []byte(c.WebhookSecretKey),
 	}
 	http.Handle("/webhook", &s)
 	addr := fmt.Sprintf(":%d", c.Port)
+	slog.Info(fmt.Sprintf("Starting server on %s", addr))
 	http.ListenAndServe(addr, nil)
+	slog.Info("Server stopped")
 }
 
 func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
