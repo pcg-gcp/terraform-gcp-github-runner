@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 
 	"github.com/sethvargo/go-envconfig"
+	compute "google.golang.org/api/compute/v1"
 )
 
 type ControlPlane struct{}
@@ -18,6 +20,14 @@ type config struct {
 }
 
 var c config
+
+type eventSummaryMessage struct {
+	Repository     string `json:"repository"`
+	Owner          string `json:"owner"`
+	EventType      string `json:"eventType"`
+	ID             int64  `json:"id"`
+	InstallationID int64  `json:"installationId"`
+}
 
 func main() {
 	c = config{}
@@ -55,6 +65,51 @@ func main() {
 }
 
 func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	slog.Info(fmt.Sprintf("Received request: %v", r))
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
+	if r.Header.Get("Content-Type") != "application/json" {
+		http.Error(w, "Invalid request content type", http.StatusBadRequest)
+	}
+	var m eventSummaryMessage
+	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	}
+	ctx := r.Context()
+	service, err := compute.NewService(ctx)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error creating compute service: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+	}
+	project := "cw-td-sandbox"
+
+	instance := &compute.Instance{
+		Name:        "test-instance",
+		MachineType: "e2-micro",
+		Zone:        "europe-west1-b",
+		Disks: []*compute.AttachedDisk{
+			{
+				AutoDelete: true,
+				Boot:       true,
+				InitializeParams: &compute.AttachedDiskInitializeParams{
+					SourceImage: "projects/debian-cloud/global/images/family/debian-12",
+				},
+			},
+		},
+		NetworkInterfaces: []*compute.NetworkInterface{
+			{
+				Network: "global/networks/default",
+			},
+		},
+		ServiceAccounts: []*compute.ServiceAccount{
+			{
+				Email: "default",
+				Scopes: []string{
+					"https://www.googleapis.com/auth/cloud-platform",
+				},
+			},
+		},
+	}
+	service.Instances.Insert(project, "europe-west1-b", instance)
 	fmt.Fprint(w, "Success!")
 }
