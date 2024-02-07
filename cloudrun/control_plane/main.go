@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/sethvargo/go-envconfig"
 	compute "google.golang.org/api/compute/v1"
@@ -67,25 +68,29 @@ func main() {
 func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
 	}
 	if r.Header.Get("Content-Type") != "application/json" {
 		http.Error(w, "Invalid request content type", http.StatusBadRequest)
+		return
 	}
 	var m eventSummaryMessage
 	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
 	}
 	ctx := r.Context()
 	service, err := compute.NewService(ctx)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating compute service: %s", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
 	}
 	project := "cw-td-sandbox"
 
 	instance := &compute.Instance{
 		Name:        "test-instance",
-		MachineType: "e2-micro",
+		MachineType: "/zones/europe-west1-b/machineTypes/e2-micro",
 		Zone:        "europe-west1-b",
 		Disks: []*compute.AttachedDisk{
 			{
@@ -110,6 +115,20 @@ func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 	}
-	service.Instances.Insert(project, "europe-west1-b", instance)
+	op, err := service.Instances.Insert(project, "europe-west1-b", instance).Do()
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error creating instance: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	for op.Status != "DONE" {
+		time.Sleep(1 * time.Second)
+		op, err = service.ZoneOperations.Get(project, "europe-west1-b", op.Name).Do()
+		if err != nil {
+			slog.Error(fmt.Sprintf("Error getting operation status: %s", err))
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+	}
 	fmt.Fprint(w, "Success!")
 }
