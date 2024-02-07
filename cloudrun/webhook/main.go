@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -27,6 +28,14 @@ type config struct {
 	ControlPlaneURL       string `env:"CONTROL_PLANE_URL,required"`
 	Port                  int    `env:"PORT,default=8080"`
 	Debug                 bool   `env:"DEBUG,default=false"`
+}
+
+type eventSummaryMessage struct {
+	Repository     string `json:"repository"`
+	Owner          string `json:"owner"`
+	EventType      string `json:"eventType"`
+	ID             int64  `json:"id"`
+	InstallationID int64  `json:"installationId"`
 }
 
 var c config
@@ -85,7 +94,13 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	switch e := event.(type) {
 	case *github.WorkflowJobEvent:
-		slog.Info(fmt.Sprintf("Processing Github event '%s' for %s", e.GetAction(), e.GetRepo().GetFullName()))
+		action := e.GetAction()
+		slog.Info(fmt.Sprintf("Processing Github event %d for %s", e.WorkflowJob.GetID(), e.GetRepo().GetFullName()))
+		if action != "queued" {
+			slog.Info(fmt.Sprintf("Ignoring event with the action '%s'", action))
+			w.WriteHeader(http.StatusAccepted)
+			return
+		}
 		ctx := r.Context()
 		client, err := cloudtasks.NewClient(ctx)
 		if err != nil {
@@ -97,6 +112,21 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		scheduleTime := time.Now().Add(time.Second * 10)
 
+		messageStruct := eventSummaryMessage{
+			Repository:     e.GetRepo().GetFullName(),
+			Owner:          e.GetRepo().GetOwner().GetLogin(),
+			EventType:      eventType,
+			ID:             e.WorkflowJob.GetID(),
+			InstallationID: e.GetInstallation().GetID(),
+		}
+
+		message, err := json.Marshal(messageStruct)
+		if err != nil {
+			slog.Error(fmt.Sprintf("Failed to marshal message: %v", err))
+			http.Error(w, "Failed to queue event", http.StatusInternalServerError)
+			return
+		}
+
 		req := &taskspb.CreateTaskRequest{
 			Parent: c.TaskQueuePath,
 			Task: &taskspb.Task{
@@ -106,14 +136,14 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						HttpMethod: taskspb.HttpMethod_POST,
 						Url:        c.ControlPlaneURL,
 						Headers: map[string]string{
-							"Content-Type": r.Header.Get("Content-Type"),
+							"Content-Type": "application/json",
 						},
 						AuthorizationHeader: &taskspb.HttpRequest_OidcToken{
 							OidcToken: &taskspb.OidcToken{
 								ServiceAccountEmail: c.InvokerServiceAccount,
 							},
 						},
-						Body: payload,
+						Body: message,
 					},
 				},
 			},
@@ -124,6 +154,7 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to queue event", http.StatusInternalServerError)
 			return
 		}
+		slog.Info(fmt.Sprintf("Queued event %d for %s", e.WorkflowJob.GetID(), e.GetRepo().GetFullName()))
 	default:
 		slog.Info(fmt.Sprintf("Ignoring event type %s", eventType))
 	}
