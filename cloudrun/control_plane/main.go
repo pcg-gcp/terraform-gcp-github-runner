@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -16,8 +18,12 @@ import (
 type ControlPlane struct{}
 
 type config struct {
-	Port  int  `env:"PORT,default=8080"`
-	Debug bool `env:"DEBUG,default=false"`
+	ProjectID   string `env:"PROJECT_ID,required"`
+	Zone        string `env:"ZONE,required"`
+	MachineType string `env:"MACHINE_TYPE,required"`
+	ImagePath   string `env:"IMAGE_PATH,required"`
+	Port        int    `env:"PORT,default=8080"`
+	Debug       bool   `env:"DEBUG,default=false"`
 }
 
 var c config
@@ -28,6 +34,14 @@ type eventSummaryMessage struct {
 	EventType      string `json:"eventType"`
 	ID             int64  `json:"id"`
 	InstallationID int64  `json:"installationId"`
+}
+
+func randomHex(n int) (string, error) {
+	bytes := make([]byte, n)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
 }
 
 func main() {
@@ -86,18 +100,25 @@ func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	project := "cw-td-sandbox"
+
+	id, err := randomHex(8)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error generating instance ID: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	instanceName := "ghr-" + id
 
 	instance := &compute.Instance{
-		Name:        "test-instance",
-		MachineType: "/zones/europe-west1-b/machineTypes/e2-micro",
-		Zone:        "europe-west1-b",
+		Name:        instanceName,
+		MachineType: "/zones/" + c.Zone + "/machineTypes/" + c.MachineType,
+		Zone:        c.Zone,
 		Disks: []*compute.AttachedDisk{
 			{
 				AutoDelete: true,
 				Boot:       true,
 				InitializeParams: &compute.AttachedDiskInitializeParams{
-					SourceImage: "projects/debian-cloud/global/images/family/debian-12",
+					SourceImage: c.ImagePath,
 				},
 			},
 		},
@@ -115,7 +136,7 @@ func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 	}
-	op, err := service.Instances.Insert(project, "europe-west1-b", instance).Do()
+	op, err := service.Instances.Insert(c.ProjectID, c.Zone, instance).Do()
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating instance: %s", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -123,7 +144,7 @@ func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	for op.Status != "DONE" {
 		time.Sleep(1 * time.Second)
-		op, err = service.ZoneOperations.Get(project, "europe-west1-b", op.Name).Do()
+		op, err = service.ZoneOperations.Get(c.ProjectID, c.Zone, op.Name).Do()
 		if err != nil {
 			slog.Error(fmt.Sprintf("Error getting operation status: %s", err))
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
