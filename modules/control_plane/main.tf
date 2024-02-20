@@ -1,0 +1,62 @@
+resource "google_service_account" "control_plane" {
+  project      = var.project_id
+  account_id   = "ghr-control-plane"
+  display_name = "Github Runner CP SA"
+}
+
+resource "google_service_account" "invoker" {
+  project      = var.project_id
+  account_id   = "ghr-cp-invoker"
+  display_name = "Invoker Service Account"
+}
+
+resource "google_project_iam_member" "control_plane" {
+  project = var.project_id
+  role    = "roles/compute.admin"
+  member  = "serviceAccount:${google_service_account.control_plane.email}"
+}
+
+resource "google_cloud_run_v2_service" "control_plane" {
+  project = var.project_id
+
+  name     = "ghr-control-plane"
+  location = var.region
+  ingress  = "INGRESS_TRAFFIC_ALL"
+
+  template {
+    service_account = google_service_account.control_plane.email
+    scaling {
+      max_instance_count = var.max_instance_count
+    }
+
+    containers {
+      image = var.image
+
+      env {
+        name  = "PROJECT_ID"
+        value = var.project_id
+      }
+      env {
+        name  = "ZONE"
+        value = var.zone
+      }
+      env {
+        name  = "IMAGE_PATH"
+        value = var.runner_image_path
+      }
+      env {
+        name  = "MACHINE_TYPE"
+        value = var.runner_machine_type
+      }
+    }
+  }
+
+}
+
+resource "google_cloud_run_v2_service_iam_binding" "control_plane" {
+  project  = google_cloud_run_v2_service.control_plane.project
+  location = google_cloud_run_v2_service.control_plane.location
+  name     = google_cloud_run_v2_service.control_plane.name
+  role     = "roles/run.invoker"
+  members  = [google_service_account.invoker.email]
+}
