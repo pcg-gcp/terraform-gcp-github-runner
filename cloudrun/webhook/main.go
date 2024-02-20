@@ -22,7 +22,6 @@ type GitHubEventMonitor struct {
 
 type config struct {
 	WebhookSecretKey      string `env:"WEBHOOK_SECRET_KEY,required"`
-	ProjectID             string `env:"PROJECT_ID,required"`
 	TaskQueuePath         string `env:"TASK_QUEUE_PATH,required"`
 	InvokerServiceAccount string `env:"INVOKER_SERVICE_ACCOUNT,required"`
 	ControlPlaneURL       string `env:"CONTROL_PLANE_URL,required"`
