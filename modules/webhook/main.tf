@@ -11,12 +11,10 @@ resource "google_project_iam_member" "webhook" {
 }
 
 resource "google_service_account_iam_member" "admin-account-iam" {
-  service_account_id = var.invoker_service_account
+  service_account_id = var.invoker_service_account_id
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${google_service_account.webhook.email}"
 }
-
-
 
 resource "google_cloud_run_v2_service" "webhook" {
   project = var.project_id

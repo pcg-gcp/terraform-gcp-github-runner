@@ -29,6 +29,11 @@ variable "invoker_service_account" {
   description = "The service account to trigger the control plane"
 }
 
+variable "invoker_service_account_id" {
+  type        = string
+  description = "The service account ID to trigger the control plane"
+}
+
 variable "max_instance_count" {
   type        = number
   description = "The maximum number of instances to run"

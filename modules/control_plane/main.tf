@@ -58,5 +58,5 @@ resource "google_cloud_run_v2_service_iam_binding" "control_plane" {
   location = google_cloud_run_v2_service.control_plane.location
   name     = google_cloud_run_v2_service.control_plane.name
   role     = "roles/run.invoker"
-  members  = [google_service_account.invoker.email]
+  members  = ["serviceAccount:${google_service_account.invoker.email}"]
 }

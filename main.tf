@@ -1,5 +1,5 @@
 resource "google_cloud_tasks_queue" "github_events" {
-  name     = "github-events"
+  name     = "github-job-events"
   location = var.region
 }
 
@@ -37,8 +37,9 @@ module "webhook" {
 
   max_instance_count = 2
 
-  invoker_service_account = module.control_plane.invoker_service_account
-  control_plane_url       = module.control_plane.service_url
+  invoker_service_account    = module.control_plane.invoker_service_account
+  invoker_service_account_id = module.control_plane.invoker_service_account_id
+  control_plane_url          = module.control_plane.service_url
 
   image           = var.webhook_oci_image
   task_queue_path = google_cloud_tasks_queue.github_events.id
