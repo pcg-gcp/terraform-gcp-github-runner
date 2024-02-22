@@ -16,6 +16,12 @@ resource "google_service_account_iam_member" "admin-account-iam" {
   member             = "serviceAccount:${google_service_account.webhook.email}"
 }
 
+resource "google_secret_manager_secret_iam_member" "webhook" {
+  secret_id = var.webhook_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.webhook.email}"
+}
+
 resource "google_cloud_run_v2_service" "webhook" {
   project = var.project_id
 
@@ -48,7 +54,7 @@ resource "google_cloud_run_v2_service" "webhook" {
         name = "WEBHOOK_SECRET_KEY"
         value_source {
           secret_key_ref {
-            secret  = var.webhook_secret_id
+            secret  = google_secret_manager_secret_iam_member.webhook.secret_id
             version = var.webhook_secret_version
           }
         }
