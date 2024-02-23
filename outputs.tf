@@ -4,5 +4,5 @@ output "webhook_secret" {
 }
 
 output "webhook_url" {
-  value = module.webhook.service_url
+  value = module.webhook.webhook_url
 }
