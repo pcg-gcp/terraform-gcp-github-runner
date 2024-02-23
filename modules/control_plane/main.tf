@@ -11,9 +11,10 @@ resource "google_service_account" "invoker" {
 }
 
 resource "google_project_iam_member" "control_plane" {
-  project = var.project_id
-  role    = "roles/compute.admin"
-  member  = "serviceAccount:${google_service_account.control_plane.email}"
+  for_each = toset(["compute.admin", "iam.serviceAccountUser"])
+  project  = var.project_id
+  role     = "roles/${each.value}"
+  member   = "serviceAccount:${google_service_account.control_plane.email}"
 }
 
 resource "google_cloud_run_v2_service" "control_plane" {
