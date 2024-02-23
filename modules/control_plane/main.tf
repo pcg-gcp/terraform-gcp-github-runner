@@ -52,6 +52,10 @@ resource "google_cloud_run_v2_service" "control_plane" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [client, client_version]
+  }
+
 }
 
 resource "google_cloud_run_v2_service_iam_binding" "control_plane" {
