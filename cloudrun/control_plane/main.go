@@ -81,15 +81,18 @@ func main() {
 
 func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
+		slog.Error(fmt.Sprintf("Invalid request method: %s", r.Method))
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 	if r.Header.Get("Content-Type") != "application/json" {
+		slog.Error(fmt.Sprintf("Invalid request content type: %s", r.Header.Get("Content-Type")))
 		http.Error(w, "Invalid request content type", http.StatusBadRequest)
 		return
 	}
 	var m eventSummaryMessage
 	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
+		slog.Error(fmt.Sprintf("Error decoding request body: %s", err))
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
