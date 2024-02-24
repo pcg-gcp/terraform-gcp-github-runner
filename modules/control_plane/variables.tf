@@ -33,3 +33,13 @@ variable "max_instance_count" {
   type        = number
   description = "The maximum number of instances to run"
 }
+
+variable "private_key_secret_id" {
+  type        = string
+  description = "The secret ID of the private key"
+}
+
+variable "private_key_secret_version" {
+  type        = string
+  description = "The secret version of the private key"
+}

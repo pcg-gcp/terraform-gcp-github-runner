@@ -16,6 +16,20 @@ resource "google_secret_manager_secret_version" "webhook_secret" {
   secret_data = var.webhook_secret
 }
 
+
+resource "google_secret_manager_secret" "github_auth_secret" {
+  secret_id = "github-auth-secret"
+
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "github_auth_secret" {
+  secret      = google_secret_manager_secret.github_auth_secret.id
+  secret_data = var.github_app_private_key_base64
+}
+
 module "control_plane" {
   source     = "./modules/control_plane"
   project_id = var.project_id

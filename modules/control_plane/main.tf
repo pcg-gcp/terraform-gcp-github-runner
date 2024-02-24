@@ -17,6 +17,12 @@ resource "google_project_iam_member" "control_plane" {
   member   = "serviceAccount:${google_service_account.control_plane.email}"
 }
 
+resource "google_secret_manager_secret_iam_member" "control_plane" {
+  secret_id = var.private_key_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.control_plane.email}"
+}
+
 resource "google_cloud_run_v2_service" "control_plane" {
   project = var.project_id
 
@@ -49,6 +55,16 @@ resource "google_cloud_run_v2_service" "control_plane" {
         name  = "MACHINE_TYPE"
         value = var.runner_machine_type
       }
+      env {
+        name = "GITHUB_APP_PRIVATE_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret_iam_member.control_plane.secret_id
+            version = var.private_key_secret_version
+          }
+        }
+      }
+
     }
   }
 

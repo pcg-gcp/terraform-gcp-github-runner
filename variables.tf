@@ -43,6 +43,12 @@ variable "webhook_secret" {
   sensitive   = true
 }
 
+variable "github_app_private_key_base64" {
+  type        = string
+  description = "The base64 encoded private key of the GitHub App"
+  sensitive   = true
+}
+
 variable "webhook_oci_image" {
   type        = string
   description = "The OCI image to deploy"
