@@ -112,7 +112,7 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		scheduleTime := time.Now().Add(time.Second * 10)
 
 		messageStruct := eventSummaryMessage{
-			Repository:     e.GetRepo().GetFullName(),
+			Repository:     e.GetRepo().GetName(),
 			Owner:          e.GetRepo().GetOwner().GetLogin(),
 			EventType:      eventType,
 			ID:             e.WorkflowJob.GetID(),
