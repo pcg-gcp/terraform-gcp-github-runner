@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -11,6 +12,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/bradleyfalzon/ghinstallation/v2"
+	"github.com/google/go-github/v59/github"
 	"github.com/sethvargo/go-envconfig"
 	compute "google.golang.org/api/compute/v1"
 )
@@ -18,12 +21,13 @@ import (
 type ControlPlane struct{}
 
 type config struct {
-	ProjectID   string `env:"PROJECT_ID,required"`
-	Zone        string `env:"ZONE,required"`
-	MachineType string `env:"MACHINE_TYPE,required"`
-	ImagePath   string `env:"IMAGE_PATH,required"`
-	Port        int    `env:"PORT,default=8080"`
-	Debug       bool   `env:"DEBUG,default=false"`
+	ProjectID           string `env:"PROJECT_ID,required"`
+	Zone                string `env:"ZONE,required"`
+	MachineType         string `env:"MACHINE_TYPE,required"`
+	ImagePath           string `env:"IMAGE_PATH,required"`
+	GithubAppPrivateKey string `env:"GITHUB_APP_PRIVATE_KEY,required"`
+	Port                int    `env:"PORT,default=8080"`
+	Debug               bool   `env:"DEBUG,default=false"`
 }
 
 var c config
@@ -154,5 +158,27 @@ func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	privateKeyBytes, err := base64.StdEncoding.DecodeString(c.GithubAppPrivateKey)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error decoding private key: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	itr, err := ghinstallation.New(http.DefaultTransport, 817748, m.InstallationID, privateKeyBytes)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error creating installation client: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	client := github.NewClient(&http.Client{Transport: itr})
+	runners, resp, err := client.Actions.ListRunners(context.Background(), m.Owner, m.Repository, nil)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error getting runners: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	slog.Info(fmt.Sprintf("Total Runner Count: %d", runners.TotalCount))
+	slog.Info(fmt.Sprintf("Response: %v", resp))
 	fmt.Fprint(w, "Success!")
 }
