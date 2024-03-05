@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/google/go-github/v59/github"
+	"github.com/google/go-github/v60/github"
 	"github.com/sethvargo/go-envconfig"
 	compute "google.golang.org/api/compute/v1"
 )
