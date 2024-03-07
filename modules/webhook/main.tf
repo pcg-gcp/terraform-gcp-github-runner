@@ -44,7 +44,7 @@ resource "google_cloud_run_v2_service" "webhook" {
       }
       env {
         name  = "CONTROL_PLANE_URL"
-        value = var.control_plane_url
+        value = "${var.control_plane_url}/startup"
       }
       env {
         name  = "INVOKER_SERVICE_ACCOUNT"
