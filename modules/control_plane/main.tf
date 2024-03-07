@@ -124,7 +124,7 @@ resource "google_cloud_run_v2_service" "control_plane" {
       }
       env {
         name  = "STARTUP_SCRIPT_URL"
-        value = google_storage_bucket_object.startup_script.self_link
+        value = "gs://${google_storage_bucket.runner_bucket.name}/${google_storage_bucket_object.startup_script.name}"
       }
       env {
         name = "GITHUB_APP_PRIVATE_KEY"
