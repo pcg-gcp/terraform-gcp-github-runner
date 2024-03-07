@@ -40,6 +40,7 @@ variable "control_plane_oci_image" {
 variable "control_plane_version" {
   type        = string
   description = "The version of the control plane to deploy"
+  default     = "latest"
 }
 
 variable "webhook_secret" {
