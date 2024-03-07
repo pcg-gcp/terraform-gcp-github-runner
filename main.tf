@@ -44,7 +44,8 @@ module "control_plane" {
   private_key_secret_id      = google_secret_manager_secret.github_auth_secret.id
   private_key_secret_version = google_secret_manager_secret_version.github_auth_secret.version
 
-  image = var.control_plane_oci_image
+  image     = var.control_plane_oci_image
+  image_tag = var.control_plane_version
 }
 
 module "webhook" {
@@ -59,6 +60,7 @@ module "webhook" {
   control_plane_url          = module.control_plane.service_url
 
   image           = var.webhook_oci_image
+  image_tag       = var.webhook_version
   task_queue_path = google_cloud_tasks_queue.github_events.id
 
   webhook_secret_id      = google_secret_manager_secret.webhook_secret.id

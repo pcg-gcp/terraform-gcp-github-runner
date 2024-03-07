@@ -14,6 +14,11 @@ variable "image" {
   description = "The image to deploy"
 }
 
+variable "image_tag" {
+  type        = string
+  description = "The tag of the image to deploy"
+}
+
 variable "task_queue_path" {
   type        = string
   description = "The path to the task queue"

@@ -36,7 +36,7 @@ resource "google_cloud_run_v2_service" "webhook" {
     }
 
     containers {
-      image = var.image
+      image = "${var.image}:${var.image_tag}"
 
       env {
         name  = "TASK_QUEUE_PATH"

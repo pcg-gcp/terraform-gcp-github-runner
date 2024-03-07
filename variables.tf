@@ -37,6 +37,11 @@ variable "control_plane_oci_image" {
   description = "The OCI image to deploy"
 }
 
+variable "control_plane_version" {
+  type        = string
+  description = "The version of the control plane to deploy"
+}
+
 variable "webhook_secret" {
   type        = string
   description = "The secret to use"
@@ -52,4 +57,11 @@ variable "github_app_private_key_base64" {
 variable "webhook_oci_image" {
   type        = string
   description = "The OCI image to deploy"
+  default     = "latest"
+}
+
+variable "webhook_version" {
+  type        = string
+  description = "The version of the webhook to deploy"
+  default     = "latest"
 }

@@ -29,6 +29,11 @@ variable "image" {
   description = "The image to deploy"
 }
 
+variable "image_tag" {
+  type        = string
+  description = "The tag of the image to deploy"
+}
+
 variable "max_instance_count" {
   type        = number
   description = "The maximum number of instances to run"

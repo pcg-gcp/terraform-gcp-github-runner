@@ -37,7 +37,7 @@ resource "google_cloud_run_v2_service" "control_plane" {
     }
 
     containers {
-      image = var.image
+      image = "${var.image}:${var.image_tag}"
 
       env {
         name  = "PROJECT_ID"
