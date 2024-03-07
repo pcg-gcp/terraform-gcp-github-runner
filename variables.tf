@@ -22,6 +22,16 @@ variable "zone" {
   default     = "europe-west1-b"
 }
 
+variable "vpc_name" {
+  type        = string
+  description = "The VPC to deploy runner instances into"
+}
+
+variable "subnet_name" {
+  type        = string
+  description = "The subnet to deploy runner instances into"
+}
+
 variable "runner_image_path" {
   type        = string
   description = "The image to deploy"

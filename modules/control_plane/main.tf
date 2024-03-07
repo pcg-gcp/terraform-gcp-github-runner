@@ -10,8 +10,14 @@ resource "google_service_account" "invoker" {
   display_name = "Invoker Service Account"
 }
 
+resource "google_service_account" "runner" {
+  project      = var.project_id
+  account_id   = "ghr-runner"
+  display_name = "Runner Service Account"
+}
+
 resource "google_project_iam_member" "control_plane" {
-  for_each = toset(["compute.admin", "iam.serviceAccountUser"])
+  for_each = toset(["compute.admin"])
   project  = var.project_id
   role     = "roles/${each.value}"
   member   = "serviceAccount:${google_service_account.control_plane.email}"
@@ -21,6 +27,19 @@ resource "google_secret_manager_secret_iam_member" "control_plane" {
   secret_id = var.private_key_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.control_plane.email}"
+}
+
+resource "google_service_account_iam_member" "runner_user" {
+  service_account_id = google_service_account.runner.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.control_plane.email}"
+}
+
+resource "google_project_iam_member" "runner" {
+  for_each = toset(["logging.logWriter", "monitoring.metricWriter"])
+  project  = var.project_id
+  role     = "roles/${each.value}"
+  member   = "serviceAccount:${google_service_account.runner.email}"
 }
 
 resource "google_cloud_run_v2_service" "control_plane" {
@@ -44,8 +63,24 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.project_id
       }
       env {
+        name  = "REGION"
+        value = var.region
+      }
+      env {
         name  = "ZONE"
         value = var.zone
+      }
+      env {
+        name  = "NETWORK"
+        value = var.vpc_name
+      }
+      env {
+        name  = "SUBNET"
+        value = var.subnet_name
+      }
+      env {
+        name  = "RUNNER_SERVICE_ACCOUNT"
+        value = google_service_account.runner.email
       }
       env {
         name  = "IMAGE_PATH"

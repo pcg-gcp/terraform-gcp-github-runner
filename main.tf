@@ -36,6 +36,9 @@ module "control_plane" {
   region     = var.region
   zone       = var.zone
 
+  vpc_name    = var.vpc_name
+  subnet_name = var.subnet_name
+
   max_instance_count = 2
 
   runner_image_path   = var.runner_image_path
