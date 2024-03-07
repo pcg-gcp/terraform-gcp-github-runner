@@ -65,6 +65,7 @@ source "googlecompute" "github-runner" {
   zone                  = var.zone
   service_account_email = var.builder_sa
   ssh_username          = "root"
+  image_name = "ubuntu-2204-ghr-${formatdate("YYYYMMDD-hhmmss",timestamp())}"
 }
 
 build {
