@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
@@ -18,17 +19,19 @@ import (
 	compute "google.golang.org/api/compute/v1"
 )
 
-type ControlPlane struct{}
-
 type config struct {
-	ProjectID           string `env:"PROJECT_ID,required"`
-	Zone                string `env:"ZONE,required"`
-	MachineType         string `env:"MACHINE_TYPE,required"`
-	ImagePath           string `env:"IMAGE_PATH,required"`
-	GithubAppPrivateKey string `env:"GITHUB_APP_PRIVATE_KEY,required"`
-	AppID               int64  `env:"GITHUB_APP_ID,required"`
-	Port                int    `env:"PORT,default=8080"`
-	Debug               bool   `env:"DEBUG,default=false"`
+	ProjectID            string `env:"PROJECT_ID,required"`
+	Zone                 string `env:"ZONE,required"`
+	Region               string `env:"REGION,required"`
+	MachineType          string `env:"MACHINE_TYPE,required"`
+	ImagePath            string `env:"IMAGE_PATH,required"`
+	GithubAppPrivateKey  string `env:"GITHUB_APP_PRIVATE_KEY,required"`
+	RunnerServiceAccount string `env:"RUNNER_SERVICE_ACCOUNT,required"`
+	Network              string `env:"NETWORK,required"`
+	Subnetwork           string `env:"SUBNETWORK,required"`
+	AppID                int64  `env:"GITHUB_APP_ID,required"`
+	Port                 int    `env:"PORT,default=8080"`
+	Debug                bool   `env:"DEBUG,default=false"`
 }
 
 var c config
@@ -73,8 +76,7 @@ func main() {
 			return a
 		},
 	})))
-	h := &ControlPlane{}
-	http.Handle("/", h)
+	http.HandleFunc("/startup", StartRunner)
 	addr := fmt.Sprintf(":%d", c.Port)
 	slog.Info(fmt.Sprintf("Starting server on %s", addr))
 	err := http.ListenAndServe(addr, nil)
@@ -84,7 +86,7 @@ func main() {
 	slog.Info("Server stopped")
 }
 
-func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func StartRunner(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		slog.Error(fmt.Sprintf("Invalid request method: %s", r.Method))
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -101,7 +103,38 @@ func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
 	ctx := r.Context()
+
+	privateKeyBytes, err := base64.StdEncoding.DecodeString(c.GithubAppPrivateKey)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error decoding private key: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	itr, err := ghinstallation.New(http.DefaultTransport, c.AppID, m.InstallationID, privateKeyBytes)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error creating installation client: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	client := github.NewClient(&http.Client{Transport: itr})
+
+	token, _, err := client.Actions.CreateRegistrationToken(ctx, m.Owner, m.Repository)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error creating registration token: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	slog.Info(fmt.Sprintf("Token: %s", token.GetToken()))
+
+	configItems := []string{
+		fmt.Sprintf("--url https://github.com/%s/%s", m.Owner, m.Repository),
+		fmt.Sprintf("--token %s", token.GetToken()),
+	}
+	githubRunnerConfig := strings.Join(configItems, " ")
+
 	service, err := compute.NewService(ctx)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating compute service: %s", err))
@@ -132,14 +165,23 @@ func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		},
 		NetworkInterfaces: []*compute.NetworkInterface{
 			{
-				Network: "global/networks/default",
+				Network:    "global/networks/" + c.Network,
+				Subnetwork: "regions/" + c.Region + "/subnetworks/" + c.Subnetwork,
 			},
 		},
 		ServiceAccounts: []*compute.ServiceAccount{
 			{
-				Email: "default",
+				Email: c.RunnerServiceAccount,
 				Scopes: []string{
 					"https://www.googleapis.com/auth/cloud-platform",
+				},
+			},
+		},
+		Metadata: &compute.Metadata{
+			Items: []*compute.MetadataItems{
+				{
+					Key:   "github_runner_config",
+					Value: &githubRunnerConfig,
 				},
 			},
 		},
@@ -159,21 +201,6 @@ func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
-	privateKeyBytes, err := base64.StdEncoding.DecodeString(c.GithubAppPrivateKey)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error decoding private key: %s", err))
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	itr, err := ghinstallation.New(http.DefaultTransport, c.AppID, m.InstallationID, privateKeyBytes)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error creating installation client: %s", err))
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	client := github.NewClient(&http.Client{Transport: itr})
-	token, _, err := client.Actions.CreateRegistrationToken(ctx, m.Owner, m.Repository)
 
 	fmt.Fprint(w, "Success!")
 }
