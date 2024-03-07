@@ -29,6 +29,9 @@ type config struct {
 	RunnerServiceAccount string `env:"RUNNER_SERVICE_ACCOUNT,required"`
 	Network              string `env:"NETWORK,required"`
 	Subnet               string `env:"SUBNET,required"`
+	RunnerUser           string `env:"RUNNER_USER,required"`
+	RunnerDir            string `env:"RUNNER_DIR,required"`
+	StartupScriptURL     string `env:"STARTUP_SCRIPT_URL,required"`
 	AppID                int64  `env:"GITHUB_APP_ID,required"`
 	Port                 int    `env:"PORT,default=8080"`
 	Debug                bool   `env:"DEBUG,default=false"`
@@ -180,8 +183,20 @@ func StartRunner(w http.ResponseWriter, r *http.Request) {
 		Metadata: &compute.Metadata{
 			Items: []*compute.MetadataItems{
 				{
+					Key:   "startup-script-url",
+					Value: &c.StartupScriptURL,
+				},
+				{
 					Key:   "github_runner_config",
 					Value: &githubRunnerConfig,
+				},
+				{
+					Key:   "runner_user",
+					Value: &c.RunnerUser,
+				},
+				{
+					Key:   "runner_dir",
+					Value: &c.RunnerDir,
 				},
 			},
 		},
