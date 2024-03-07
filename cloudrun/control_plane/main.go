@@ -28,7 +28,7 @@ type config struct {
 	GithubAppPrivateKey  string `env:"GITHUB_APP_PRIVATE_KEY,required"`
 	RunnerServiceAccount string `env:"RUNNER_SERVICE_ACCOUNT,required"`
 	Network              string `env:"NETWORK,required"`
-	Subnetwork           string `env:"SUBNETWORK,required"`
+	Subnet               string `env:"SUBNET,required"`
 	AppID                int64  `env:"GITHUB_APP_ID,required"`
 	Port                 int    `env:"PORT,default=8080"`
 	Debug                bool   `env:"DEBUG,default=false"`
@@ -166,7 +166,7 @@ func StartRunner(w http.ResponseWriter, r *http.Request) {
 		NetworkInterfaces: []*compute.NetworkInterface{
 			{
 				Network:    "global/networks/" + c.Network,
-				Subnetwork: "regions/" + c.Region + "/subnetworks/" + c.Subnetwork,
+				Subnetwork: "regions/" + c.Region + "/subnetworks/" + c.Subnet,
 			},
 		},
 		ServiceAccounts: []*compute.ServiceAccount{
