@@ -22,16 +22,8 @@ import (
 type config struct {
 	ProjectID            string `env:"PROJECT_ID,required"`
 	Zone                 string `env:"ZONE,required"`
-	Region               string `env:"REGION,required"`
-	MachineType          string `env:"MACHINE_TYPE,required"`
-	ImagePath            string `env:"IMAGE_PATH,required"`
 	GithubAppPrivateKey  string `env:"GITHUB_APP_PRIVATE_KEY,required"`
-	RunnerServiceAccount string `env:"RUNNER_SERVICE_ACCOUNT,required"`
-	Network              string `env:"NETWORK,required"`
-	Subnet               string `env:"SUBNET,required"`
-	RunnerUser           string `env:"RUNNER_USER,required"`
-	RunnerDir            string `env:"RUNNER_DIR,required"`
-	StartupScriptURL     string `env:"STARTUP_SCRIPT_URL,required"`
+	InstanceTemplateName string `env:"INSTANCE_TEMPLATE_NAME,required"`
 	AppID                int64  `env:"GITHUB_APP_ID,required"`
 	Port                 int    `env:"PORT,default=8080"`
 	Debug                bool   `env:"DEBUG,default=false"`
@@ -145,6 +137,13 @@ func StartRunner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	template, err := service.InstanceTemplates.Get(c.ProjectID, c.InstanceTemplateName).Do()
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error getting instance template: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	id, err := randomHex(8)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error generating instance ID: %s", err))
@@ -154,54 +153,17 @@ func StartRunner(w http.ResponseWriter, r *http.Request) {
 	instanceName := "ghr-" + id
 
 	instance := &compute.Instance{
-		Name:        instanceName,
-		MachineType: "/zones/" + c.Zone + "/machineTypes/" + c.MachineType,
-		Zone:        c.Zone,
-		Disks: []*compute.AttachedDisk{
-			{
-				AutoDelete: true,
-				Boot:       true,
-				InitializeParams: &compute.AttachedDiskInitializeParams{
-					SourceImage: c.ImagePath,
-				},
-			},
-		},
-		NetworkInterfaces: []*compute.NetworkInterface{
-			{
-				Network:    "global/networks/" + c.Network,
-				Subnetwork: "regions/" + c.Region + "/subnetworks/" + c.Subnet,
-			},
-		},
-		ServiceAccounts: []*compute.ServiceAccount{
-			{
-				Email: c.RunnerServiceAccount,
-				Scopes: []string{
-					"https://www.googleapis.com/auth/cloud-platform",
-				},
-			},
-		},
+		Name: instanceName,
 		Metadata: &compute.Metadata{
-			Items: []*compute.MetadataItems{
-				{
-					Key:   "startup-script-url",
-					Value: &c.StartupScriptURL,
-				},
-				{
-					Key:   "github_runner_config",
-					Value: &githubRunnerConfig,
-				},
-				{
-					Key:   "runner_user",
-					Value: &c.RunnerUser,
-				},
-				{
-					Key:   "runner_dir",
-					Value: &c.RunnerDir,
-				},
-			},
+			Items: append(template.Properties.Metadata.Items, &compute.MetadataItems{
+				Key:   "github_runner_config",
+				Value: &githubRunnerConfig,
+			}),
 		},
 	}
-	op, err := service.Instances.Insert(c.ProjectID, c.Zone, instance).Do()
+	createInstanceRequest := service.Instances.Insert(c.ProjectID, c.Zone, instance)
+	createInstanceRequest = createInstanceRequest.SourceInstanceTemplate(template.SelfLink)
+	op, err := createInstanceRequest.Do()
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating instance: %s", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)

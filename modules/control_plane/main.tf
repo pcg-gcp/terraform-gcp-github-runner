@@ -10,12 +10,6 @@ resource "google_service_account" "invoker" {
   display_name = "Invoker Service Account"
 }
 
-resource "google_service_account" "runner" {
-  project      = var.project_id
-  account_id   = "ghr-runner"
-  display_name = "Runner Service Account"
-}
-
 resource "google_project_iam_member" "control_plane" {
   for_each = toset(["compute.admin"])
   project  = var.project_id
@@ -30,36 +24,9 @@ resource "google_secret_manager_secret_iam_member" "control_plane" {
 }
 
 resource "google_service_account_iam_member" "runner_user" {
-  service_account_id = google_service_account.runner.name
+  service_account_id = var.runner_service_account_id
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${google_service_account.control_plane.email}"
-}
-
-resource "google_project_iam_member" "runner" {
-  for_each = toset(["logging.logWriter", "monitoring.metricWriter"])
-  project  = var.project_id
-  role     = "roles/${each.value}"
-  member   = "serviceAccount:${google_service_account.runner.email}"
-}
-
-resource "google_storage_bucket" "runner_bucket" {
-  name          = "ghr-scripts-bucket"
-  location      = var.region
-  force_destroy = true
-
-  uniform_bucket_level_access = true
-}
-
-resource "google_storage_bucket_object" "startup_script" {
-  name   = "startup.sh"
-  source = "../../templates/runners/start_runner.sh"
-  bucket = google_storage_bucket.runner_bucket.name
-}
-
-resource "google_storage_bucket_iam_member" "runner" {
-  bucket = google_storage_bucket.runner_bucket.name
-  role   = "roles/storage.objectViewer"
-  member = "serviceAccount:${google_service_account.runner.email}"
 }
 
 resource "google_cloud_run_v2_service" "control_plane" {
@@ -83,48 +50,16 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.project_id
       }
       env {
-        name  = "REGION"
-        value = var.region
-      }
-      env {
         name  = "ZONE"
         value = var.zone
       }
       env {
-        name  = "NETWORK"
-        value = var.vpc_name
-      }
-      env {
-        name  = "SUBNET"
-        value = var.subnet_name
-      }
-      env {
-        name  = "RUNNER_SERVICE_ACCOUNT"
-        value = google_service_account.runner.email
-      }
-      env {
-        name  = "RUNNER_USER"
-        value = var.runner_user
-      }
-      env {
-        name  = "RUNNER_DIR"
-        value = var.runner_dir
-      }
-      env {
-        name  = "IMAGE_PATH"
-        value = var.runner_image_path
-      }
-      env {
-        name  = "MACHINE_TYPE"
-        value = var.runner_machine_type
+        name  = "INSTANCE_TEMPLATE_NAME"
+        value = var.instance_template_name
       }
       env {
         name  = "GITHUB_APP_ID"
         value = var.github_app_id
-      }
-      env {
-        name  = "STARTUP_SCRIPT_URL"
-        value = "gs://${google_storage_bucket.runner_bucket.name}/${google_storage_bucket_object.startup_script.name}"
       }
       env {
         name = "GITHUB_APP_PRIVATE_KEY"

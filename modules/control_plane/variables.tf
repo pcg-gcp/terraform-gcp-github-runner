@@ -13,34 +13,14 @@ variable "zone" {
   description = "The zone to deploy runner instances into"
 }
 
-variable "vpc_name" {
+variable "runner_service_account_id" {
   type        = string
-  description = "The VPC to deploy runner instances into"
+  description = "The service account to run the runner as"
 }
 
-variable "subnet_name" {
+variable "instance_template_name" {
   type        = string
-  description = "The subnet to deploy runner instances into"
-}
-
-variable "runner_image_path" {
-  type        = string
-  description = "The image to deploy"
-}
-
-variable "runner_machine_type" {
-  type        = string
-  description = "The machine type to deploy"
-}
-
-variable "runner_user" {
-  type        = string
-  description = "The user to run the runner as"
-}
-
-variable "runner_dir" {
-  type        = string
-  description = "The directory to run the runner in"
+  description = "The name of the instance template to use for runner instances"
 }
 
 variable "image" {
