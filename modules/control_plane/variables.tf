@@ -39,6 +39,11 @@ variable "max_instance_count" {
   description = "The maximum number of instances to run"
 }
 
+variable "github_app_id" {
+  type        = string
+  description = "The GitHub App ID"
+}
+
 variable "private_key_secret_id" {
   type        = string
   description = "The secret ID of the private key"

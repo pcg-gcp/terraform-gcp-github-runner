@@ -48,6 +48,11 @@ variable "webhook_secret" {
   sensitive   = true
 }
 
+variable "github_app_id" {
+  type        = string
+  description = "The GitHub App ID"
+}
+
 variable "github_app_private_key_base64" {
   type        = string
   description = "The base64 encoded private key of the GitHub App"

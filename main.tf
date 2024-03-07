@@ -41,6 +41,7 @@ module "control_plane" {
   runner_image_path   = var.runner_image_path
   runner_machine_type = var.runner_machine_type
 
+  github_app_id              = var.github_app_id
   private_key_secret_id      = google_secret_manager_secret.github_auth_secret.id
   private_key_secret_version = google_secret_manager_secret_version.github_auth_secret.version
 

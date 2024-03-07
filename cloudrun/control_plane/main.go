@@ -26,6 +26,7 @@ type config struct {
 	MachineType         string `env:"MACHINE_TYPE,required"`
 	ImagePath           string `env:"IMAGE_PATH,required"`
 	GithubAppPrivateKey string `env:"GITHUB_APP_PRIVATE_KEY,required"`
+	AppID               int64  `env:"GITHUB_APP_ID,required"`
 	Port                int    `env:"PORT,default=8080"`
 	Debug               bool   `env:"DEBUG,default=false"`
 }
@@ -165,20 +166,14 @@ func (*ControlPlane) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	itr, err := ghinstallation.New(http.DefaultTransport, 817748, m.InstallationID, privateKeyBytes)
+	itr, err := ghinstallation.New(http.DefaultTransport, c.AppID, m.InstallationID, privateKeyBytes)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating installation client: %s", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 	client := github.NewClient(&http.Client{Transport: itr})
-	runners, resp, err := client.Actions.ListRunners(context.Background(), m.Owner, m.Repository, nil)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error getting runners: %s", err))
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	slog.Info(fmt.Sprintf("Total Runner Count: %d", runners.TotalCount))
-	slog.Info(fmt.Sprintf("Response: %v", resp))
+	token, _, err := client.Actions.CreateRegistrationToken(ctx, m.Owner, m.Repository)
+
 	fmt.Fprint(w, "Success!")
 }

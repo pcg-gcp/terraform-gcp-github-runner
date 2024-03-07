@@ -56,6 +56,10 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.runner_machine_type
       }
       env {
+        name  = "GITHUB_APP_ID"
+        value = var.github_app_id
+      }
+      env {
         name = "GITHUB_APP_PRIVATE_KEY"
         value_source {
           secret_key_ref {
