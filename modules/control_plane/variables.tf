@@ -33,6 +33,16 @@ variable "runner_machine_type" {
   description = "The machine type to deploy"
 }
 
+variable "runner_user" {
+  type        = string
+  description = "The user to run the runner as"
+}
+
+variable "runner_dir" {
+  type        = string
+  description = "The directory to run the runner in"
+}
+
 variable "image" {
   type        = string
   description = "The image to deploy"

@@ -42,6 +42,26 @@ resource "google_project_iam_member" "runner" {
   member   = "serviceAccount:${google_service_account.runner.email}"
 }
 
+resource "google_storage_bucket" "runner_bucket" {
+  name          = "ghr-scripts-bucket"
+  location      = var.region
+  force_destroy = true
+
+  uniform_bucket_level_access = true
+}
+
+resource "google_storage_bucket_object" "startup_script" {
+  name   = "startup.sh"
+  source = "../../templates/runners/start_runner.sh"
+  bucket = google_storage_bucket.runner_bucket.name
+}
+
+resource "google_storage_bucket_iam_member" "runner" {
+  bucket = google_storage_bucket.runner_bucket.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.runner.email}"
+}
+
 resource "google_cloud_run_v2_service" "control_plane" {
   project = var.project_id
 
@@ -83,6 +103,14 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = google_service_account.runner.email
       }
       env {
+        name  = "RUNNER_USER"
+        value = var.runner_user
+      }
+      env {
+        name  = "RUNNER_DIR"
+        value = var.runner_dir
+      }
+      env {
         name  = "IMAGE_PATH"
         value = var.runner_image_path
       }
@@ -93,6 +121,10 @@ resource "google_cloud_run_v2_service" "control_plane" {
       env {
         name  = "GITHUB_APP_ID"
         value = var.github_app_id
+      }
+      env {
+        name  = "STARTUP_SCRIPT_URL"
+        value = google_storage_bucket_object.startup_script.media_link
       }
       env {
         name = "GITHUB_APP_PRIVATE_KEY"

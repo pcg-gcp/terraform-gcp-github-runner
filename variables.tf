@@ -42,6 +42,18 @@ variable "runner_machine_type" {
   description = "The machine type to deploy"
 }
 
+variable "runner_user" {
+  type        = string
+  description = "The user to run the runner as"
+  default     = "ghrunner"
+}
+
+variable "runner_dir" {
+  type        = string
+  description = "The directory to run the runner in"
+  default     = "/opt/github-runner"
+}
+
 variable "control_plane_oci_image" {
   type        = string
   description = "The OCI image to deploy"
