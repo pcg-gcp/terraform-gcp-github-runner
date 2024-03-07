@@ -19,15 +19,18 @@ sudo useradd -m $RUNNER_USER
 sudo usermod -aG docker $RUNNER_USER
 
 echo "Creating action runner directory"
-mkdir -p /opt/github-runner
+mkdir -p $RUNNER_DIR
 
 filename="actions-runner.tar.gz"
 echo "Downloading action runner from $RUNNER_DOWNLOAD_URL to $filename"
 curl -sS -L $RUNNER_DOWNLOAD_URL -o $filename
 
 echo "Extracting action runner"
-tar xzf $filename -C /opt/github-runner
+tar xzf $filename -C $RUNNER_DIR
 echo "Delete tar file"
 rm -rf $filename
+
+echo "Setting permissions"
+chown -R $RUNNER_USER $RUNNER_DIR
 
 echo "Install Script finished"
