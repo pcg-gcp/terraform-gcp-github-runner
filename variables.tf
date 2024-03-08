@@ -93,3 +93,21 @@ variable "webhook_version" {
   description = "The version of the webhook to deploy"
   default     = "latest"
 }
+
+variable "shutdown_schedule" {
+  type        = string
+  description = "The shutdown schedule in cron format"
+  default     = "*/5 * * * *"
+}
+
+variable "shutdown_schedule_timezone" {
+  type        = string
+  description = "The timezone of the shutdown schedule"
+  default     = "Etc/UTC"
+}
+
+variable "shutdown_attempt_timeout" {
+  type        = string
+  description = "The timeout for the shutdown attempt"
+  default     = "320s"
+}

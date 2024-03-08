@@ -87,3 +87,25 @@ resource "google_cloud_run_v2_service_iam_binding" "control_plane" {
   role     = "roles/run.invoker"
   members  = ["serviceAccount:${google_service_account.invoker.email}"]
 }
+
+resource "google_cloud_scheduler_job" "shutdown" {
+  name             = "shutdown-scheduler"
+  description      = "Trigger the control plane to check for runners to shutdown"
+  schedule         = var.shutdown_schedule
+  time_zone        = var.shutdown_schedule_timezone
+  attempt_deadline = var.shutdown_attempt_timeout
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = "${google_cloud_run_v2_service.control_plane.uri}/shutdown"
+
+    oidc_token {
+      service_account_email = google_service_account.invoker.email
+    }
+  }
+}
+

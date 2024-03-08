@@ -52,3 +52,18 @@ variable "private_key_secret_version" {
   type        = string
   description = "The secret version of the private key"
 }
+
+variable "shutdown_schedule" {
+  type        = string
+  description = "The shutdown schedule in cron format"
+}
+
+variable "shutdown_schedule_timezone" {
+  type        = string
+  description = "The timezone of the shutdown schedule"
+}
+
+variable "shutdown_attempt_timeout" {
+  type        = string
+  description = "The timeout for the shutdown attempt"
+}

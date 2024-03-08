@@ -63,6 +63,10 @@ module "control_plane" {
 
   image     = var.control_plane_oci_image
   image_tag = var.control_plane_version
+
+  shutdown_schedule          = var.shutdown_schedule
+  shutdown_schedule_timezone = var.shutdown_schedule_timezone
+  shutdown_attempt_timeout   = var.shutdown_attempt_timeout
 }
 
 module "webhook" {

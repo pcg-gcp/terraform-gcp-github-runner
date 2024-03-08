@@ -47,6 +47,7 @@ resource "google_compute_instance_template" "runner" {
 
   disk {
     source_image = var.image_path
+    disk_type    = "pd-balanced"
     auto_delete  = true
     boot         = true
   }
