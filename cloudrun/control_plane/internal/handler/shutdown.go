@@ -34,9 +34,9 @@ func (h *ControlPlaneHandler) StopRunner(w http.ResponseWriter, r *http.Request)
 	}
 	slog.Debug(fmt.Sprintf("Found %d instances", len(instanceList.Items)))
 	var wg sync.WaitGroup
-	wg.Add(len(instanceList.Items))
 	for _, zone := range instanceList.Items {
 		for _, instance := range zone.Instances {
+			wg.Add(1)
 			go h.processInstance(instance, &wg, ctx)
 		}
 	}
@@ -143,7 +143,7 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 		op, err = h.computeService.ZoneOperations.Get(h.cfg.ProjectID, zone, op.Name).Do()
 		if err != nil {
 			slog.Error(fmt.Sprintf("Error getting operation status: %s", err))
-			continue
+			return
 		}
 	}
 	if op.Error != nil {
