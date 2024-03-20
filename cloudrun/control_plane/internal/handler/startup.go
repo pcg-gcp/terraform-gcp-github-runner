@@ -59,6 +59,10 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 		fmt.Sprintf("--url https://github.com/%s/%s", m.Owner, m.Repository),
 		fmt.Sprintf("--token %s", token.GetToken()),
 	}
+
+	if h.cfg.Ephemeral {
+		configItems = append(configItems, "--ephemeral")
+	}
 	githubRunnerConfig := strings.Join(configItems, " ")
 
 	slog.Debug(fmt.Sprintf("Getting instance template %s", h.cfg.InstanceTemplateName))

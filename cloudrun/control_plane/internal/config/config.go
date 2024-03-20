@@ -7,5 +7,6 @@ type Config struct {
 	InstanceTemplateName string `env:"INSTANCE_TEMPLATE_NAME,required"`
 	AppID                int64  `env:"GITHUB_APP_ID,required"`
 	Port                 int    `env:"PORT,default=8080"`
+	Ephemeral            bool   `env:"EPHEMERAL,default=false"`
 	Debug                bool   `env:"DEBUG,default=false"`
 }
