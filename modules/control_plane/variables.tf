@@ -67,3 +67,8 @@ variable "shutdown_attempt_timeout" {
   type        = string
   description = "The timeout for the shutdown attempt"
 }
+
+variable "ephemeral" {
+  type        = bool
+  description = "Whether to use ephemeral runners"
+}

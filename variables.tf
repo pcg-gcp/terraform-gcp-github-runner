@@ -54,6 +54,12 @@ variable "runner_dir" {
   default     = "/opt/github-runner"
 }
 
+variable "ephemeral" {
+  type        = bool
+  description = "Whether to use ephemeral runners"
+  default     = false
+}
+
 variable "control_plane_oci_image" {
   type        = string
   description = "The OCI image to deploy"
