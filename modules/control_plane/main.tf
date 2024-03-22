@@ -66,6 +66,10 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.ephemeral
       }
       env {
+        name  = "USE_JIT_CONFIG"
+        value = var.use_jit_config
+      }
+      env {
         name = "GITHUB_APP_PRIVATE_KEY"
         value_source {
           secret_key_ref {

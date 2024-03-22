@@ -72,3 +72,9 @@ variable "ephemeral" {
   type        = bool
   description = "Whether to use ephemeral runners"
 }
+
+variable "use_jit_config" {
+  type        = bool
+  description = "Whether to use JIT config"
+  default     = false
+}

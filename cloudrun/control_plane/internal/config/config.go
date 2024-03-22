@@ -8,5 +8,6 @@ type Config struct {
 	AppID                int64  `env:"GITHUB_APP_ID,required"`
 	Port                 int    `env:"PORT,default=8080"`
 	Ephemeral            bool   `env:"EPHEMERAL,default=false"`
+	UseJitConfig         bool   `env:"USE_JIT_CONFIG,default=false"`
 	Debug                bool   `env:"DEBUG,default=false"`
 }

@@ -60,6 +60,12 @@ variable "ephemeral" {
   default     = false
 }
 
+variable "use_jit_config" {
+  type        = bool
+  description = "Whether to use JIT config"
+  default     = false
+}
+
 variable "control_plane_oci_image" {
   type        = string
   description = "The OCI image to deploy"

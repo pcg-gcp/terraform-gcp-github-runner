@@ -54,7 +54,8 @@ module "control_plane" {
 
   max_instance_count = 2
 
-  ephemeral = var.ephemeral
+  ephemeral      = var.ephemeral
+  use_jit_config = var.use_jit_config
 
   instance_template_name    = module.runner_template.instance_template_name
   runner_service_account_id = module.runner_template.runner_service_account_id

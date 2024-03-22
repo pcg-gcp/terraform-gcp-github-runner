@@ -48,6 +48,17 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 
 	slog.Debug(fmt.Sprintf("Creating registration token for %s/%s", m.Owner, m.Repository))
 
+	if h.cfg.Ephemeral && h.cfg.UseJitConfig {
+		jitConfig, _, err := ghClient.Actions.GenerateRepoJITConfig(ctx, m.Owner, m.Repository, nil)
+		if err != nil {
+			slog.Error(fmt.Sprintf("Error creating JIT config: %s", err))
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+		}
+		if jitConfig != nil {
+			slog.Debug(fmt.Sprintf("JIT config: %s", jitConfig.GetEncodedJITConfig()))
+		}
+	}
+
 	token, _, err := ghClient.Actions.CreateRegistrationToken(ctx, m.Owner, m.Repository)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating registration token: %s", err))
