@@ -51,6 +51,10 @@ resource "google_cloud_run_v2_service" "webhook" {
         value = var.invoker_service_account
       }
       env {
+        name  = "ENABLE_DEBUG"
+        value = var.enable_debug
+      }
+      env {
         name = "WEBHOOK_SECRET_KEY"
         value_source {
           secret_key_ref {

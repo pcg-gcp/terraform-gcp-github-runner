@@ -13,6 +13,11 @@ variable "zone" {
   description = "The zone to deploy runner instances into"
 }
 
+variable "enable_debug" {
+  type        = bool
+  description = "Whether to enable debug mode"
+}
+
 variable "runner_service_account_id" {
   type        = string
   description = "The service account to run the runner as"

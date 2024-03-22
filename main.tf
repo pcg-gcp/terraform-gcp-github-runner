@@ -52,6 +52,8 @@ module "control_plane" {
   region     = var.region
   zone       = var.zone
 
+  enable_debug = var.enable_debug
+
   max_instance_count = 2
 
   ephemeral      = var.ephemeral
@@ -76,6 +78,8 @@ module "webhook" {
   source     = "./modules/webhook"
   project_id = var.project_id
   region     = var.region
+
+  enable_debug = var.enable_debug
 
   max_instance_count = 2
 

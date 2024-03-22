@@ -15,11 +15,16 @@ variable "zones" {
   default     = ["europe-west1-b", "europe-west1-c", "europe-west1-d"]
 }
 
-
 variable "zone" {
   type        = string
   description = "The zone to deploy runner instances into"
   default     = "europe-west1-b"
+}
+
+variable "enable_debug" {
+  type        = bool
+  description = "Whether to enable debug mode"
+  default     = false
 }
 
 variable "vpc_name" {

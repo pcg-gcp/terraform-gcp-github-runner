@@ -19,6 +19,11 @@ variable "image_tag" {
   description = "The tag of the image to deploy"
 }
 
+variable "enable_debug" {
+  type        = bool
+  description = "Whether to enable debug mode"
+}
+
 variable "task_queue_path" {
   type        = string
   description = "The path to the task queue"

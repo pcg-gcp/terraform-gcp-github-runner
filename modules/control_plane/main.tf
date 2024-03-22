@@ -54,6 +54,10 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.zone
       }
       env {
+        name  = "ENABLE_DEBUG"
+        value = var.enable_debug
+      }
+      env {
         name  = "INSTANCE_TEMPLATE_NAME"
         value = var.instance_template_name
       }
