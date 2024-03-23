@@ -36,6 +36,14 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 
 	ctx := r.Context()
 
+	id, err := randomHex(8)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error generating instance ID: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	instanceName := "ghr-" + id
+
 	slog.Debug(fmt.Sprintf("Generating installation client for installation %d", m.InstallationID))
 
 	itr, err := ghinstallation.New(http.DefaultTransport, h.cfg.AppID, m.InstallationID, h.privateKeyBytes)
@@ -48,33 +56,50 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 
 	slog.Debug(fmt.Sprintf("Creating registration token for %s/%s", m.Owner, m.Repository))
 
+	var configMetadata *compute.MetadataItems
+	var useJitConfigStr string
 	if h.cfg.Ephemeral && h.cfg.UseJitConfig {
-		jitConfig, _, err := ghClient.Actions.GenerateRepoJITConfig(ctx, m.Owner, m.Repository, nil)
+		useJitConfigStr = "true"
+		workfolder := "_work"
+		jitConfig, _, err := ghClient.Actions.GenerateRepoJITConfig(ctx, m.Owner, m.Repository, &github.GenerateJITConfigRequest{
+			Labels:        []string{"self-hosted", "ephemeral"},
+			Name:          instanceName,
+			WorkFolder:    &workfolder,
+			RunnerGroupID: 1,
+		})
 		if err != nil {
 			slog.Error(fmt.Sprintf("Error creating JIT config: %s", err))
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
 		}
-		if jitConfig != nil {
-			slog.Debug(fmt.Sprintf("JIT config: %s", jitConfig.GetEncodedJITConfig()))
+		encodedJITConfig := jitConfig.GetEncodedJITConfig()
+		configMetadata = &compute.MetadataItems{
+			Key:   "github_runner_config",
+			Value: &encodedJITConfig,
+		}
+	} else {
+		useJitConfigStr = "false"
+		token, _, err := ghClient.Actions.CreateRegistrationToken(ctx, m.Owner, m.Repository)
+		if err != nil {
+			slog.Error(fmt.Sprintf("Error creating registration token: %s", err))
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		configItems := []string{
+			fmt.Sprintf("--url https://github.com/%s/%s", m.Owner, m.Repository),
+			fmt.Sprintf("--token %s", token.GetToken()),
+		}
+
+		if h.cfg.Ephemeral {
+			configItems = append(configItems, "--ephemeral")
+		}
+		githubRunnerConfig := strings.Join(configItems, " ")
+		configMetadata = &compute.MetadataItems{
+			Key:   "github_runner_config",
+			Value: &githubRunnerConfig,
 		}
 	}
-
-	token, _, err := ghClient.Actions.CreateRegistrationToken(ctx, m.Owner, m.Repository)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error creating registration token: %s", err))
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	configItems := []string{
-		fmt.Sprintf("--url https://github.com/%s/%s", m.Owner, m.Repository),
-		fmt.Sprintf("--token %s", token.GetToken()),
-	}
-
-	if h.cfg.Ephemeral {
-		configItems = append(configItems, "--ephemeral")
-	}
-	githubRunnerConfig := strings.Join(configItems, " ")
 
 	slog.Debug(fmt.Sprintf("Getting instance template %s", h.cfg.InstanceTemplateName))
 	template, err := h.computeService.InstanceTemplates.Get(h.cfg.ProjectID, h.cfg.InstanceTemplateName).Do()
@@ -84,22 +109,14 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	id, err := randomHex(8)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error generating instance ID: %s", err))
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	instanceName := "ghr-" + id
-
 	slog.Debug(fmt.Sprintf("Creating instance %s", instanceName))
 
 	instance := &compute.Instance{
 		Name: instanceName,
 		Metadata: &compute.Metadata{
-			Items: append(template.Properties.Metadata.Items, &compute.MetadataItems{
-				Key:   "github_runner_config",
-				Value: &githubRunnerConfig,
+			Items: append(template.Properties.Metadata.Items, configMetadata, &compute.MetadataItems{
+				Key:   "use_jit_config",
+				Value: &useJitConfigStr,
 			}),
 		},
 		Labels: map[string]string{

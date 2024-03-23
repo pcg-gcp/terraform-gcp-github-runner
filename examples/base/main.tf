@@ -10,6 +10,8 @@ module "github_runners" {
   # source = "git@github.com:pcg-gcp/terraform-gcp-github-runner.git"
   source = "../../"
 
+  enable_debug = true
+
   project_id = "cw-td-sandbox"
   region     = "europe-west1"
   zone       = "europe-west1-b"
@@ -20,6 +22,9 @@ module "github_runners" {
 
   github_app_private_key_base64 = data.sops_file.secrets.data["github.private_key"]
   github_app_id                 = data.sops_file.secrets.data["github.app_id"]
+
+  ephemeral      = true
+  use_jit_config = true
 
   runner_image_path       = "projects/cw-td-sandbox/global/images/ubuntu-2204-ghr-20240307-163710"
   runner_machine_type     = "n2-standard-2"
