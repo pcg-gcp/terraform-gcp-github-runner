@@ -6,7 +6,7 @@ require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.10.0
 	github.com/google/go-github/v60 v60.0.0
 	github.com/sethvargo/go-envconfig v1.0.1
-	google.golang.org/api v0.171.0
+	google.golang.org/api v0.172.0
 )
 
 require (
