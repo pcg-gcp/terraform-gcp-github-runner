@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/config"
+	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/handler"
 	"github.com/sethvargo/go-envconfig"
 )
@@ -36,13 +37,14 @@ func main() {
 			return a
 		},
 	})))
+	ghclient.Init(&cfg)
 	handler, err := handler.New(&cfg)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating handler: %s", err))
 		os.Exit(1)
 	}
-	http.HandleFunc("/startup", handler.StartRunner)
-	http.HandleFunc("/shutdown", handler.StopRunner)
+	http.HandleFunc("POST /startup", handler.StartRunner)
+	http.HandleFunc("POST /shutdown", handler.StopRunner)
 	addr := fmt.Sprintf(":%d", cfg.Port)
 	slog.Info(fmt.Sprintf("Starting server on %s", addr))
 	err = http.ListenAndServe(addr, nil)

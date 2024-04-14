@@ -3,38 +3,45 @@ package handler
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/google/go-github/v60/github"
+	"github.com/google/go-github/v61/github"
+	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 	"google.golang.org/api/compute/v1"
 )
 
 func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		slog.Error(fmt.Sprintf("Invalid request method: %s", r.Method))
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	ctx := r.Context()
+	m, err := ValidateStartUpRequest(r)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error validating request: %s", err))
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
-	if r.Header.Get("Content-Type") != "application/json" {
-		slog.Error(fmt.Sprintf("Invalid request content type: %s", r.Header.Get("Content-Type")))
-		http.Error(w, "Invalid request content type", http.StatusBadRequest)
-		return
-	}
-	var m eventSummaryMessage
-	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
-		slog.Error(fmt.Sprintf("Error decoding request body: %s", err))
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
+
 	slog.Info(fmt.Sprintf("Proccesing event for %s/%s", m.Owner, m.Repository))
 
-	ctx := r.Context()
+	ghClient, err := ghclient.CreateClient(m.InstallationID)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error creating client: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	if ok, err := MakeStartUpDecision(m); !ok {
+		slog.Info(fmt.Sprintf("Ignoring event for %s/%s", m.Owner, m.Repository))
+		fmt.Fprint(w, "Ignored")
+		w.WriteHeader(http.StatusOK)
+		return
+	} else if err != nil {
+		slog.Error(fmt.Sprintf("Error making decision: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 
 	id, err := randomHex(8)
 	if err != nil {
@@ -45,14 +52,6 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 	instanceName := "ghr-" + id
 
 	slog.Debug(fmt.Sprintf("Generating installation client for installation %d", m.InstallationID))
-
-	itr, err := ghinstallation.New(http.DefaultTransport, h.cfg.AppID, m.InstallationID, h.privateKeyBytes)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error creating installation client: %s", err))
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	ghClient := github.NewClient(&http.Client{Transport: itr})
 
 	slog.Debug(fmt.Sprintf("Creating registration token for %s/%s", m.Owner, m.Repository))
 

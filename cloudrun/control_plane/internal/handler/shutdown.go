@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/google/go-github/v60/github"
+	"github.com/google/go-github/v61/github"
+	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 	"google.golang.org/api/compute/v1"
 )
 
@@ -62,28 +62,28 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 	owner := instance.Labels["ghr-owner"]
 	runnerType := instance.Labels["ghr-type"]
 	var installationId int64
+	appsClient := ghclient.GetAppsClient()
 	switch runnerType {
 	case "repo":
-		installation, _, err := h.appsClient.Apps.FindRepositoryInstallation(ctx, owner, repo)
+		installation, _, err := appsClient.Apps.FindRepositoryInstallation(ctx, owner, repo)
 		if err != nil {
 			slog.Error(fmt.Sprintf("Error finding installation: %s", err))
 			return
 		}
 		installationId = installation.GetID()
 	case "org":
-		installation, _, err := h.appsClient.Apps.FindOrganizationInstallation(ctx, owner)
+		installation, _, err := appsClient.Apps.FindOrganizationInstallation(ctx, owner)
 		if err != nil {
 			slog.Error(fmt.Sprintf("Error finding installation: %s", err))
 			return
 		}
 		installationId = installation.GetID()
 	}
-	itr, err := ghinstallation.New(http.DefaultTransport, h.cfg.AppID, installationId, h.privateKeyBytes)
+	ghClient, err := ghclient.CreateClient(installationId)
 	if err != nil {
-		slog.Error(fmt.Sprintf("Error creating installation client: %s", err))
+		slog.Error(fmt.Sprintf("Error creating client: %s", err))
 		return
 	}
-	ghClient := github.NewClient(&http.Client{Transport: itr})
 
 	var runners *github.Runners
 	switch runnerType {
