@@ -11,7 +11,7 @@ import (
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	taskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
-	"github.com/google/go-github/v60/github"
+	"github.com/google/go-github/v61/github"
 	"github.com/sethvargo/go-envconfig"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -66,12 +66,13 @@ func main() {
 	s := GitHubEventMonitor{
 		webhookSecretKey: []byte(c.WebhookSecretKey),
 	}
-	http.Handle("/webhook", &s)
+	http.Handle("POST /webhook", &s)
 	addr := fmt.Sprintf(":%d", c.Port)
 	slog.Info(fmt.Sprintf("Starting server on %s", addr))
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error starting server: %s", err))
+		os.Exit(1)
 	}
 	slog.Info("Server stopped")
 }
