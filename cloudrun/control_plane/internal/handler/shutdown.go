@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/go-github/v61/github"
 	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 	"google.golang.org/api/compute/v1"
 )
@@ -58,77 +57,17 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 		slog.Info(fmt.Sprintf("Instance %s has not been running for 5 minutes, skipping", instance.Name))
 		return
 	}
-	repo := instance.Labels["ghr-repo"]
-	owner := instance.Labels["ghr-owner"]
-	runnerType := instance.Labels["ghr-type"]
-	var installationId int64
-	appsClient := ghclient.GetAppsClient()
-	switch runnerType {
-	case "repo":
-		installation, _, err := appsClient.Apps.FindRepositoryInstallation(ctx, owner, repo)
-		if err != nil {
-			slog.Error(fmt.Sprintf("Error finding installation: %s", err))
-			return
-		}
-		installationId = installation.GetID()
-	case "org":
-		installation, _, err := appsClient.Apps.FindOrganizationInstallation(ctx, owner)
-		if err != nil {
-			slog.Error(fmt.Sprintf("Error finding installation: %s", err))
-			return
-		}
-		installationId = installation.GetID()
-	}
-	ghClient, err := ghclient.CreateClient(installationId)
+
+	removed, err := ghclient.RemoveRunnerForInstance(instance, ctx)
 	if err != nil {
-		slog.Error(fmt.Sprintf("Error creating client: %s", err))
+		slog.Error("Failed to remove runner", err)
+		return
+	}
+	if !removed {
+		slog.Info("Runner shouldn't be removed. Skipping")
 		return
 	}
 
-	var runners *github.Runners
-	switch runnerType {
-	case "repo":
-		runners, _, err = ghClient.Actions.ListRunners(ctx, owner, repo, nil)
-		if err != nil {
-			slog.Error(fmt.Sprintf("Error listing runners: %s", err))
-			return
-		}
-	case "org":
-		runners, _, err = ghClient.Actions.ListOrganizationRunners(ctx, owner, nil)
-		if err != nil {
-			slog.Error(fmt.Sprintf("Error listing runners: %s", err))
-			return
-		}
-	}
-	var runner *github.Runner
-	for _, itRunner := range runners.Runners {
-		if strings.HasSuffix(itRunner.GetName(), instance.Name) {
-			runner = itRunner
-			break
-		}
-	}
-	if runner == nil {
-		slog.Info(fmt.Sprintf("Runner %s not found", instance.Name))
-		return
-	}
-	if runner.GetBusy() {
-		slog.Info(fmt.Sprintf("Runner %s is busy, skipping", instance.Name))
-		return
-	}
-	switch runnerType {
-	case "repo":
-		_, err = ghClient.Actions.RemoveRunner(ctx, owner, repo, runner.GetID())
-		if err != nil {
-			slog.Error(fmt.Sprintf("Error removing runner: %s", err))
-			return
-		}
-	case "org":
-		_, err = ghClient.Actions.RemoveOrganizationRunner(ctx, owner, runner.GetID())
-		if err != nil {
-			slog.Error(fmt.Sprintf("Error removing runner: %s", err))
-			return
-		}
-	}
 	slog.Info(fmt.Sprintf("Runner %s removed", instance.Name))
 	slog.Info(fmt.Sprintf("Deleting instance %s", instance.Name))
 	zoneSplit := strings.Split(instance.Zone, "/")

@@ -13,22 +13,30 @@ var (
 	privateKeyBytes []byte
 	cfg             *config.Config
 	appsClient      *github.Client
+	clients         map[int64]*github.Client
 )
 
-func CreateClient(installationID int64) (*github.Client, error) {
+func GetClient(installationID int64) (*github.Client, error) {
+	if client, ok := clients[installationID]; ok {
+		return client, nil
+	}
 	itr, err := ghinstallation.New(http.DefaultTransport, cfg.AppID, installationID, privateKeyBytes)
 	if err != nil {
 		return nil, err
 	}
-	return github.NewClient(&http.Client{Transport: itr}), nil
+	client := github.NewClient(&http.Client{Transport: itr})
+	clients[installationID] = client
+	return client, nil
 }
 
 func GetAppsClient() *github.Client {
 	return appsClient
 }
 
-func Init(cfg *config.Config) error {
-	privateKeyBytes, err := base64.StdEncoding.DecodeString(cfg.GithubAppPrivateKey)
+func Init(config *config.Config) error {
+	cfg = config
+	var err error
+	privateKeyBytes, err = base64.StdEncoding.DecodeString(cfg.GithubAppPrivateKey)
 	if err != nil {
 		return err
 	}
@@ -37,5 +45,7 @@ func Init(cfg *config.Config) error {
 		return err
 	}
 	appsClient = github.NewClient(&http.Client{Transport: itr})
+
+	clients = make(map[int64]*github.Client)
 	return nil
 }

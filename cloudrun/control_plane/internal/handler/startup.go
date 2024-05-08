@@ -6,10 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/google/go-github/v61/github"
 	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 	"google.golang.org/api/compute/v1"
 )
@@ -24,13 +22,6 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 	}
 
 	slog.Info(fmt.Sprintf("Proccesing event for %s/%s", m.Owner, m.Repository))
-
-	ghClient, err := ghclient.CreateClient(m.InstallationID)
-	if err != nil {
-		slog.Error(fmt.Sprintf("Error creating client: %s", err))
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
 
 	if ok, err := MakeStartUpDecision(m); !ok {
 		slog.Info(fmt.Sprintf("Ignoring event for %s/%s", m.Owner, m.Repository))
@@ -55,49 +46,11 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 
 	slog.Debug(fmt.Sprintf("Creating registration token for %s/%s", m.Owner, m.Repository))
 
-	var configMetadata *compute.MetadataItems
-	var useJitConfigStr string
-	if h.cfg.Ephemeral && h.cfg.UseJitConfig {
-		useJitConfigStr = "true"
-		workfolder := "_work"
-		jitConfig, _, err := ghClient.Actions.GenerateRepoJITConfig(ctx, m.Owner, m.Repository, &github.GenerateJITConfigRequest{
-			Labels:        []string{"self-hosted", "ephemeral"},
-			Name:          instanceName,
-			WorkFolder:    &workfolder,
-			RunnerGroupID: 1,
-		})
-		if err != nil {
-			slog.Error(fmt.Sprintf("Error creating JIT config: %s", err))
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-		encodedJITConfig := jitConfig.GetEncodedJITConfig()
-		configMetadata = &compute.MetadataItems{
-			Key:   "github_runner_config",
-			Value: &encodedJITConfig,
-		}
-	} else {
-		useJitConfigStr = "false"
-		token, _, err := ghClient.Actions.CreateRegistrationToken(ctx, m.Owner, m.Repository)
-		if err != nil {
-			slog.Error(fmt.Sprintf("Error creating registration token: %s", err))
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		configItems := []string{
-			fmt.Sprintf("--url https://github.com/%s/%s", m.Owner, m.Repository),
-			fmt.Sprintf("--token %s", token.GetToken()),
-		}
-
-		if h.cfg.Ephemeral {
-			configItems = append(configItems, "--ephemeral")
-		}
-		githubRunnerConfig := strings.Join(configItems, " ")
-		configMetadata = &compute.MetadataItems{
-			Key:   "github_runner_config",
-			Value: &githubRunnerConfig,
-		}
+	configMetadata, useJitConfigStr, err := ghclient.GenerateRunnerConfig(m.InstallationID, m.Owner, m.Repository, instanceName, ctx)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error generating Runner Config: %s", err))
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
 	}
 
 	slog.Debug(fmt.Sprintf("Getting instance template %s", h.cfg.InstanceTemplateName))
