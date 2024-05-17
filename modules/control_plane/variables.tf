@@ -83,3 +83,13 @@ variable "use_jit_config" {
   description = "Whether to use JIT config"
   default     = false
 }
+
+variable "max_runner_count" {
+  type        = number
+  description = "The maximum number of runners that should be deployed at the same time"
+}
+
+variable "min_runner_count" {
+  type        = number
+  description = "The minimum number of runners that should be deployed at all times"
+}

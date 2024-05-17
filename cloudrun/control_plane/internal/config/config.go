@@ -7,6 +7,8 @@ type Config struct {
 	InstanceTemplateName string `env:"INSTANCE_TEMPLATE_NAME,required"`
 	AppID                int64  `env:"GITHUB_APP_ID,required"`
 	Port                 int    `env:"PORT,default=8080"`
+	MaxRunnerCount       int    `env:"MAX_INSTANCE_COUNT,required"`
+	MinRunnerCount       int    `env:"MIN_INSTANCE_COUNT,required"`
 	Ephemeral            bool   `env:"EPHEMERAL,default=false"`
 	UseJitConfig         bool   `env:"USE_JIT_CONFIG,default=false"`
 	Debug                bool   `env:"DEBUG,default=false"`

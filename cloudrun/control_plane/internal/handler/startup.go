@@ -14,7 +14,7 @@ import (
 
 func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	m, err := ValidateStartUpRequest(r)
+	m, err := parseStartUpRequest(r)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error validating request: %s", err))
 		http.Error(w, "Bad request", http.StatusBadRequest)
@@ -23,13 +23,13 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 
 	slog.Info(fmt.Sprintf("Proccesing event for %s/%s", m.Owner, m.Repository))
 
-	if ok, err := MakeStartUpDecision(m); !ok {
+	if ok, err := h.makeStartUpDecision(m, ctx); !ok {
 		slog.Info(fmt.Sprintf("Ignoring event for %s/%s", m.Owner, m.Repository))
 		fmt.Fprint(w, "Ignored")
 		w.WriteHeader(http.StatusOK)
 		return
 	} else if err != nil {
-		slog.Error(fmt.Sprintf("Error making decision: %s", err))
+		slog.Error(fmt.Sprintf("Error making startup decision: %s", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

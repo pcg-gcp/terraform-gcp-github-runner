@@ -71,6 +71,18 @@ variable "use_jit_config" {
   default     = false
 }
 
+variable "max_runner_count" {
+  type        = number
+  description = "The maximum number of runners that should be deployed at the same time"
+  default     = 10
+}
+
+variable "min_runner_count" {
+  type        = number
+  description = "The minimum number of runners that should be deployed at all times"
+  default     = 0
+}
+
 variable "control_plane_oci_image" {
   type        = string
   description = "The OCI image to deploy"

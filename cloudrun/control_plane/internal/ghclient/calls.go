@@ -11,7 +11,7 @@ import (
 )
 
 func GenerateRunnerConfig(installationID int64, owner, repository, instanceName string, ctx context.Context) (*compute.MetadataItems, string, error) {
-	client, err := GetClient(installationID)
+	client, err := getClient(installationID)
 	if err != nil {
 		return nil, "", err
 	}
@@ -68,7 +68,7 @@ func RemoveRunnerForInstance(instance *compute.Instance, ctx context.Context) (b
 	owner := instance.Labels["ghr-owner"]
 	runnerType := instance.Labels["ghr-type"]
 
-	appsClient := GetAppsClient()
+	appsClient := getAppsClient()
 
 	switch runnerType {
 	case "repo":
@@ -86,7 +86,7 @@ func RemoveRunnerForInstance(instance *compute.Instance, ctx context.Context) (b
 		}
 		installationId = installation.GetID()
 	}
-	client, err := GetClient(installationId)
+	client, err := getClient(installationId)
 	if err != nil {
 		err = fmt.Errorf("failed to create client: %w", err)
 		return false, err
@@ -138,4 +138,19 @@ func RemoveRunnerForInstance(instance *compute.Instance, ctx context.Context) (b
 		}
 	}
 	return true, nil
+}
+
+func GetJobStatus(jobID, installationID int64, owner, repo string, ctx context.Context) (string, error) {
+	client, err := getClient(installationID)
+	if err != nil {
+		err = fmt.Errorf("failed to create client: %w", err)
+		return "", err
+	}
+
+	job, _, err := client.Actions.GetWorkflowJobByID(ctx, owner, repo, jobID)
+	if err != nil {
+		err = fmt.Errorf("failed to get workflow job: %w", err)
+		return "", err
+	}
+	return job.GetStatus(), nil
 }

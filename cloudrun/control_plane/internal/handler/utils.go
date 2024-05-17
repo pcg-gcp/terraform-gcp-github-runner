@@ -1,12 +1,16 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
+
+	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 )
 
-func ValidateStartUpRequest(request *http.Request) (*eventSummaryMessage, error) {
+func parseStartUpRequest(request *http.Request) (*eventSummaryMessage, error) {
 	if request.Header.Get("Content-Type") != "application/json" {
 		return nil, fmt.Errorf("invalid content type %s", request.Header.Get("Content-Type"))
 	}
@@ -18,6 +22,25 @@ func ValidateStartUpRequest(request *http.Request) (*eventSummaryMessage, error)
 	return &message, nil
 }
 
-func MakeStartUpDecision(message *eventSummaryMessage) (bool, error) {
+func (h *ControlPlaneHandler) makeStartUpDecision(m *eventSummaryMessage, ctx context.Context) (bool, error) {
+	jobStatus, err := ghclient.GetJobStatus(m.ID, m.InstallationID, m.Owner, m.Repository, ctx)
+	if err != nil {
+		err = fmt.Errorf("failed to get jobStatus: %w", err)
+		return false, err
+	}
+	if jobStatus != "queued" {
+		slog.Warn("Job no longer queued. No instance will be created")
+		return false, nil
+	}
+
+	instanceList, err := h.computeService.Instances.AggregatedList(h.cfg.ProjectID).Filter("labels.ghr-managed=true").Do()
+	if err != nil {
+		err = fmt.Errorf("failed to get instance list: %w", err)
+		return false, err
+	}
+	if len(instanceList.Items) >= h.cfg.MaxRunnerCount {
+		slog.Warn("Already reached max instance count. Scale up not possible", "instance count", len(instanceList.Items))
+		return false, nil
+	}
 	return true, nil
 }

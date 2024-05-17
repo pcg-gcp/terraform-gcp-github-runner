@@ -16,7 +16,7 @@ var (
 	clients         map[int64]*github.Client
 )
 
-func GetClient(installationID int64) (*github.Client, error) {
+func getClient(installationID int64) (*github.Client, error) {
 	if client, ok := clients[installationID]; ok {
 		return client, nil
 	}
@@ -29,7 +29,7 @@ func GetClient(installationID int64) (*github.Client, error) {
 	return client, nil
 }
 
-func GetAppsClient() *github.Client {
+func getAppsClient() *github.Client {
 	return appsClient
 }
 

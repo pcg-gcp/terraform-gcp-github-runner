@@ -74,6 +74,14 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.use_jit_config
       }
       env {
+        name  = "MAX_RUNNER_COUNT"
+        value = var.max_runner_count
+      }
+      env {
+        name  = "MIN_RUNNER_COUNT"
+        value = var.min_runner_count
+      }
+      env {
         name = "GITHUB_APP_PRIVATE_KEY"
         value_source {
           secret_key_ref {
