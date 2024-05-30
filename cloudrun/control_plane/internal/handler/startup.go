@@ -26,7 +26,6 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 	if ok, err := h.makeStartUpDecision(m, ctx); !ok {
 		slog.Info(fmt.Sprintf("Ignoring event for %s/%s", m.Owner, m.Repository))
 		fmt.Fprint(w, "Ignored")
-		w.WriteHeader(http.StatusOK)
 		return
 	} else if err != nil {
 		slog.Error(fmt.Sprintf("Error making startup decision: %s", err))

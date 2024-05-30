@@ -38,8 +38,9 @@ func (h *ControlPlaneHandler) makeStartUpDecision(m *eventSummaryMessage, ctx co
 		err = fmt.Errorf("failed to get instance list: %w", err)
 		return false, err
 	}
-	if len(instanceList.Items) >= h.cfg.MaxRunnerCount {
-		slog.Warn("Already reached max instance count. Scale up not possible", "instance count", len(instanceList.Items))
+	instanceCount := len(instanceList.Items[h.cfg.Zone].Instances)
+	if instanceCount >= h.cfg.MaxRunnerCount {
+		slog.Warn("Already reached max instance count. Scale up not possible", "instance count", instanceCount)
 		return false, nil
 	}
 	return true, nil
