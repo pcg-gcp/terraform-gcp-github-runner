@@ -15,7 +15,6 @@ module "github_runners" {
   project_id = "cw-td-sandbox"
   region     = "europe-west1"
   zone       = "europe-west1-b"
-  zones      = ["europe-west1-b", "europe-west1-c", "europe-west1-d"]
 
   vpc_name    = "default"
   subnet_name = "default"

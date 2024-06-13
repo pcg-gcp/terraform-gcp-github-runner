@@ -9,12 +9,6 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "zones" {
-  type        = list(string)
-  description = "The zones to deploy the runner instances into"
-  default     = ["europe-west1-b", "europe-west1-c", "europe-west1-d"]
-}
-
 variable "zone" {
   type        = string
   description = "The zone to deploy runner instances into"

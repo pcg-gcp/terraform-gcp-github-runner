@@ -8,11 +8,6 @@ variable "region" {
   description = "The region to deploy all resources into"
 }
 
-variable "zone" {
-  type        = string
-  description = "The zone to deploy runner instances into"
-}
-
 variable "vpc_name" {
   type        = string
   description = "The VPC to deploy runner instances into"
