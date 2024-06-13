@@ -21,8 +21,10 @@ resource "google_storage_bucket" "runner_bucket" {
 }
 
 resource "google_storage_bucket_object" "startup_script" {
-  name   = "startup.sh"
-  source = "../../templates/runners/start_runner.sh"
+  name = "setup_runner.sh"
+  content = templatefile("../../templates/runners/start_runner.sh", {
+    include_run = true,
+  })
   bucket = google_storage_bucket.runner_bucket.name
 }
 

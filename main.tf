@@ -34,7 +34,6 @@ module "runner_template" {
   source     = "./modules/runner_template"
   project_id = var.project_id
   region     = var.region
-  zone       = var.zone
 
   vpc_name    = var.vpc_name
   subnet_name = var.subnet_name
