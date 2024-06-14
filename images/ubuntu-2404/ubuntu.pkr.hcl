@@ -92,10 +92,6 @@ build {
   }
 
   provisioner "shell" {
-    environment_vars = [
-      "DEBIAN_FRONTEND=noninteractive",
-    ]
-
     inline = concat([
       "/bin/bash /tmp/install_runner.sh",
       "rm -f /tmp/install_runner.sh",

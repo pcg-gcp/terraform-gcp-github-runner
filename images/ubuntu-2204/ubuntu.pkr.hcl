@@ -79,19 +79,19 @@ build {
   sources = ["sources.googlecompute.github-runner"]
 
   provisioner "file" {
-    source      = "../../templates/runners/install_runner.sh"
     destination = "/tmp/install_runner.sh"
+    content = templatefile("../../templates/runners/setup_runner.tftpl",
+      {
+        include_install = true,
+        include_run = false,
+        node_version = local.effective_node_version,
+        runner_user = var.runner_user,
+        runner_dir = var.runner_dir,
+        runner_download_url = "https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz"
+      })
   }
 
   provisioner "shell" {
-    environment_vars = [
-      "DEBIAN_FRONTEND=noninteractive",
-      "NODE_VERSION=${local.effective_node_version}",
-      "RUNNER_USER=${var.runner_user}",
-      "RUNNER_DIR=${var.runner_dir}",
-      "RUNNER_DOWNLOAD_URL=https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz",
-    ]
-
     inline = concat([
       "/bin/bash /tmp/install_runner.sh",
       "rm -f /tmp/install_runner.sh",
