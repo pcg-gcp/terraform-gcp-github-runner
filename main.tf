@@ -41,8 +41,11 @@ module "runner_template" {
   image_path   = var.runner_image_path
   machine_type = var.runner_machine_type
 
-  runner_user = var.runner_user
-  runner_dir  = var.runner_dir
+  runner_user          = var.runner_user
+  runner_dir           = var.runner_dir
+  runner_version       = var.runner_version
+  node_version         = var.node_version
+  include_install_step = var.include_install_step
 }
 
 module "control_plane" {
@@ -95,4 +98,6 @@ module "webhook" {
 
   webhook_secret_id      = google_secret_manager_secret.webhook_secret.id
   webhook_secret_version = google_secret_manager_secret_version.webhook_secret.version
+
+  forward_delay_seconds = var.forward_delay_seconds
 }

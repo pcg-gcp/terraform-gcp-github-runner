@@ -34,6 +34,7 @@ variable "subnet_name" {
 variable "runner_image_path" {
   type        = string
   description = "The image to deploy"
+  default     = "ubuntu-os-cloud/ubuntu-2404-lts-amd64"
 }
 
 variable "runner_machine_type" {
@@ -51,6 +52,24 @@ variable "runner_dir" {
   type        = string
   description = "The directory to run the runner in"
   default     = "/opt/github-runner"
+}
+
+variable "include_install_step" {
+  type        = bool
+  description = "Whether to include the install step for the setup script"
+  default     = true
+}
+
+variable "runner_version" {
+  description = "GitHub Runner version to install"
+  type        = string
+  default     = ""
+}
+
+variable "node_version" {
+  description = "NodeJS version to install"
+  type        = string
+  default     = ""
 }
 
 variable "ephemeral" {
@@ -115,6 +134,12 @@ variable "webhook_version" {
   type        = string
   description = "The version of the webhook to deploy"
   default     = "latest"
+}
+
+variable "forward_delay_seconds" {
+  type        = number
+  description = "The number of seconds the webhook handler delays events before forwarding them to the control plane"
+  default     = 10
 }
 
 variable "shutdown_schedule" {

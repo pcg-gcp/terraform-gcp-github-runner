@@ -37,3 +37,18 @@ variable "runner_dir" {
   type        = string
   description = "The directory to run the runner in"
 }
+
+variable "include_install_step" {
+  type        = bool
+  description = "Whether to include the install step for the setup script"
+}
+
+variable "runner_version" {
+  description = "GitHub Runner version to install"
+  type        = string
+}
+
+variable "node_version" {
+  description = "NodeJS version to install"
+  type        = string
+}

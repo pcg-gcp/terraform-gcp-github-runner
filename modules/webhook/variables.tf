@@ -34,6 +34,11 @@ variable "control_plane_url" {
   description = "The control plane URL"
 }
 
+variable "forward_delay_seconds" {
+  type        = number
+  description = "The number of seconds the webhook handler delays events before forwarding them to the control plane"
+}
+
 variable "invoker_service_account" {
   type        = string
   description = "The service account to trigger the control plane"

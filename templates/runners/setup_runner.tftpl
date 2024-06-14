@@ -34,9 +34,7 @@ echo "Setting permissions"
 chown -R ${runner_user} ${runner_dir}
 
 echo "Install Script finished"
-
-%{ endif }
-%{if include_run == true }
+%{ endif }%{if include_run == true }
 echo "Starting runner..."
 
 echo "Download runner config"

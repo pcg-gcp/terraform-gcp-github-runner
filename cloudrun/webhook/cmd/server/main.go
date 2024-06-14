@@ -25,6 +25,7 @@ type config struct {
 	TaskQueuePath         string `env:"TASK_QUEUE_PATH,required"`
 	InvokerServiceAccount string `env:"INVOKER_SERVICE_ACCOUNT,required"`
 	ControlPlaneURL       string `env:"CONTROL_PLANE_URL,required"`
+	DelaySeconds          int    `env:"DELAY_SECONDS,required"`
 	Port                  int    `env:"PORT,default=8080"`
 	Debug                 bool   `env:"DEBUG,default=false"`
 }
@@ -110,7 +111,7 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		defer client.Close()
 
-		scheduleTime := time.Now().Add(time.Second * 10)
+		scheduleTime := time.Now().Add(time.Second * time.Duration(c.DelaySeconds))
 
 		messageStruct := eventSummaryMessage{
 			Repository:     e.GetRepo().GetName(),

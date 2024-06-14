@@ -94,10 +94,6 @@ build {
   provisioner "shell" {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
-      "NODE_VERSION=${local.effective_node_version}",
-      "RUNNER_USER=${var.runner_user}",
-      "RUNNER_DIR=${var.runner_dir}",
-      "RUNNER_DOWNLOAD_URL=https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz",
     ]
 
     inline = concat([
