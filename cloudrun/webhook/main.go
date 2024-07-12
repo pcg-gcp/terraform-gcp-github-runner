@@ -17,17 +17,19 @@ import (
 )
 
 type GitHubEventMonitor struct {
+	cfg              *config
 	webhookSecretKey []byte
 }
 
 type config struct {
-	WebhookSecretKey      string `env:"WEBHOOK_SECRET_KEY,required"`
-	TaskQueuePath         string `env:"TASK_QUEUE_PATH,required"`
-	InvokerServiceAccount string `env:"INVOKER_SERVICE_ACCOUNT,required"`
-	ControlPlaneURL       string `env:"CONTROL_PLANE_URL,required"`
-	DelaySeconds          int    `env:"DELAY_SECONDS,required"`
-	Port                  int    `env:"PORT,default=8080"`
-	Debug                 bool   `env:"DEBUG,default=false"`
+	WebhookSecretKey      string   `env:"WEBHOOK_SECRET_KEY,required"`
+	TaskQueuePath         string   `env:"TASK_QUEUE_PATH,required"`
+	InvokerServiceAccount string   `env:"INVOKER_SERVICE_ACCOUNT,required"`
+	ControlPlaneURL       string   `env:"CONTROL_PLANE_URL,required"`
+	RunnerLabels          []string `env:"RUNNER_LABELS,required"`
+	DelaySeconds          int      `env:"DELAY_SECONDS,required"`
+	Port                  int      `env:"PORT,default=8080"`
+	Debug                 bool     `env:"DEBUG,default=false"`
 }
 
 type eventSummaryMessage struct {
@@ -38,10 +40,8 @@ type eventSummaryMessage struct {
 	InstallationID int64  `json:"installationId"`
 }
 
-var c config
-
 func main() {
-	c = config{}
+	c := config{}
 	if err := envconfig.Process(context.Background(), &c); err != nil {
 		panic(err)
 	}
@@ -66,6 +66,7 @@ func main() {
 	})))
 	s := GitHubEventMonitor{
 		webhookSecretKey: []byte(c.WebhookSecretKey),
+		cfg:              &c,
 	}
 	http.Handle("POST /webhook", &s)
 	addr := fmt.Sprintf(":%d", c.Port)
@@ -102,6 +103,13 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusAccepted)
 			return
 		}
+
+		if !hasRequiredLabels(e.WorkflowJob.Labels, s.cfg.RunnerLabels) {
+			slog.Info(fmt.Sprintf("Ignoring event for %s because it does not have the required labels", e.GetRepo().GetFullName()))
+			w.WriteHeader(http.StatusAccepted)
+			return
+		}
+
 		ctx := r.Context()
 		client, err := cloudtasks.NewClient(ctx)
 		if err != nil {
@@ -111,7 +119,7 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		defer client.Close()
 
-		scheduleTime := time.Now().Add(time.Second * time.Duration(c.DelaySeconds))
+		scheduleTime := time.Now().Add(time.Second * time.Duration(s.cfg.DelaySeconds))
 
 		messageStruct := eventSummaryMessage{
 			Repository:     e.GetRepo().GetName(),
@@ -129,19 +137,19 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 		req := &taskspb.CreateTaskRequest{
-			Parent: c.TaskQueuePath,
+			Parent: s.cfg.TaskQueuePath,
 			Task: &taskspb.Task{
 				ScheduleTime: timestamppb.New(scheduleTime),
 				MessageType: &taskspb.Task_HttpRequest{
 					HttpRequest: &taskspb.HttpRequest{
 						HttpMethod: taskspb.HttpMethod_POST,
-						Url:        c.ControlPlaneURL,
+						Url:        s.cfg.ControlPlaneURL,
 						Headers: map[string]string{
 							"Content-Type": "application/json",
 						},
 						AuthorizationHeader: &taskspb.HttpRequest_OidcToken{
 							OidcToken: &taskspb.OidcToken{
-								ServiceAccountEmail: c.InvokerServiceAccount,
+								ServiceAccountEmail: s.cfg.InvokerServiceAccount,
 							},
 						},
 						Body: message,
@@ -159,4 +167,20 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		slog.Info(fmt.Sprintf("Ignoring event type %s", eventType))
 	}
+}
+
+func hasRequiredLabels(requiredLabels []string, runnerLabels []string) bool {
+	for _, requiredLabel := range requiredLabels {
+		hasLabel := false
+		for _, runnerLabel := range runnerLabels {
+			if requiredLabel == runnerLabel {
+				hasLabel = true
+				break
+			}
+		}
+		if !hasLabel {
+			return false
+		}
+	}
+	return true
 }

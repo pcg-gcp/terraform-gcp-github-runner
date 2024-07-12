@@ -22,7 +22,7 @@ func GenerateRunnerConfig(installationID int64, owner, repository, instanceName 
 		useJitConfigStr = "true"
 		workfolder := "_work"
 		jitConfig, _, err := client.Actions.GenerateRepoJITConfig(ctx, owner, repository, &github.GenerateJITConfigRequest{
-			Labels:        []string{"self-hosted", "ephemeral"},
+			Labels:        cfg.RunnerLabels,
 			Name:          instanceName,
 			WorkFolder:    &workfolder,
 			RunnerGroupID: 1,
@@ -47,6 +47,7 @@ func GenerateRunnerConfig(installationID int64, owner, repository, instanceName 
 		configItems := []string{
 			fmt.Sprintf("--url https://github.com/%s/%s", owner, repository),
 			fmt.Sprintf("--token %s", token.GetToken()),
+			fmt.Sprintf("--labels %s", strings.Join(cfg.RunnerLabels, ",")),
 		}
 
 		if cfg.Ephemeral {

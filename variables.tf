@@ -66,6 +66,12 @@ variable "runner_version" {
   default     = ""
 }
 
+variable "runner_extra_labels" {
+  description = "Github runner extra labels. These should not include github read-only labels like 'self-hosted' or 'linux'"
+  type        = list(string)
+  default     = []
+}
+
 variable "node_version" {
   description = "NodeJS version to install"
   type        = string

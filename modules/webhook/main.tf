@@ -59,6 +59,10 @@ resource "google_cloud_run_v2_service" "webhook" {
         value = var.forward_delay_seconds
       }
       env {
+        name  = "RUNNER_LABELS"
+        value = join(",", var.runner_labels)
+      }
+      env {
         name = "WEBHOOK_SECRET_KEY"
         value_source {
           secret_key_ref {

@@ -82,6 +82,10 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.min_runner_count
       }
       env {
+        name  = "RUNNER_LABELS"
+        value = join(",", var.runner_labels)
+      }
+      env {
         name = "GITHUB_APP_PRIVATE_KEY"
         value_source {
           secret_key_ref {

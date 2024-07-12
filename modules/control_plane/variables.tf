@@ -23,6 +23,11 @@ variable "runner_service_account_id" {
   description = "The service account to run the runner as"
 }
 
+variable "runner_labels" {
+  description = "Github runner labels"
+  type        = list(string)
+}
+
 variable "instance_template_name" {
   type        = string
   description = "The name of the instance template to use for runner instances"

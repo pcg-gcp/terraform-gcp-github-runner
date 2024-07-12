@@ -54,6 +54,11 @@ variable "max_instance_count" {
   description = "The maximum number of instances to run"
 }
 
+variable "runner_labels" {
+  description = "Github runner labels"
+  type        = list(string)
+}
+
 variable "webhook_secret_id" {
   type        = string
   description = "The secret ID for the webhook"

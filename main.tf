@@ -1,3 +1,7 @@
+locals {
+  runner_labels = sort(distinct(concat(["self-hosted", "linux", "x64"], var.runner_extra_labels)))
+}
+
 resource "google_cloud_tasks_queue" "github_events" {
   name     = "github-job-events"
   location = var.region
@@ -66,6 +70,7 @@ module "control_plane" {
 
   instance_template_name    = module.runner_template.instance_template_name
   runner_service_account_id = module.runner_template.runner_service_account_id
+  runner_labels             = local.runner_labels
 
   github_app_id              = var.github_app_id
   private_key_secret_id      = google_secret_manager_secret.github_auth_secret.id
@@ -100,4 +105,5 @@ module "webhook" {
   webhook_secret_version = google_secret_manager_secret_version.webhook_secret.version
 
   forward_delay_seconds = var.forward_delay_seconds
+  runner_labels         = local.runner_labels
 }
