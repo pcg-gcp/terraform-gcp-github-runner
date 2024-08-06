@@ -11,7 +11,7 @@ resource "google_service_account" "invoker" {
 }
 
 resource "google_project_iam_member" "control_plane" {
-  for_each = toset(["compute.admin"])
+  for_each = toset(["compute.admin", "secretmanager.admin"])
   project  = var.project_id
   role     = "roles/${each.value}"
   member   = "serviceAccount:${google_service_account.control_plane.email}"
@@ -72,6 +72,10 @@ resource "google_cloud_run_v2_service" "control_plane" {
       env {
         name  = "USE_JIT_CONFIG"
         value = var.use_jit_config
+      }
+      env {
+        name  = "USE_ORG_RUNNERS"
+        value = var.use_org_runners
       }
       env {
         name  = "MAX_RUNNER_COUNT"

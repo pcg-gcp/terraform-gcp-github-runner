@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/gcp"
 	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 	"google.golang.org/api/compute/v1"
 )
@@ -60,7 +61,7 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 
 	removed, err := ghclient.RemoveRunnerForInstance(instance, ctx)
 	if err != nil {
-		slog.Error("Failed to remove runner", err)
+		slog.Error("Failed to remove runner", slog.String("error", err.Error()))
 		return
 	}
 	if !removed {
@@ -69,6 +70,12 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 	}
 
 	slog.Info(fmt.Sprintf("Runner %s removed", instance.Name))
+
+	err = gcp.DeleteSecret(h.cfg.ProjectID, fmt.Sprintf("%s-config", instance.Name), ctx)
+	if err != nil {
+		slog.Warn(fmt.Sprintf("Error deleting secret for instance %s: %s", instance.Name, err))
+	}
+
 	slog.Info(fmt.Sprintf("Deleting instance %s", instance.Name))
 	zoneSplit := strings.Split(instance.Zone, "/")
 	zone := zoneSplit[len(zoneSplit)-1]

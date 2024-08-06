@@ -10,18 +10,13 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
-func GenerateRunnerConfig(installationID int64, owner, repository, instanceName string, ctx context.Context) (*compute.MetadataItems, string, error) {
-	client, err := getClient(installationID)
-	if err != nil {
-		return nil, "", err
-	}
+func generateJitConfig(owner, repository, instanceName string, useOrgRunners bool, ctx context.Context, client *github.Client) (string, error) {
+	var jitConfig *github.JITRunnerConfig
+	workfolder := "_work"
+	var err error
 
-	var configMetadata *compute.MetadataItems
-	var useJitConfigStr string
-	if cfg.Ephemeral && cfg.UseJitConfig {
-		useJitConfigStr = "true"
-		workfolder := "_work"
-		jitConfig, _, err := client.Actions.GenerateRepoJITConfig(ctx, owner, repository, &github.GenerateJITConfigRequest{
+	if !useOrgRunners {
+		jitConfig, _, err = client.Actions.GenerateRepoJITConfig(ctx, owner, repository, &github.GenerateJITConfigRequest{
 			Labels:        cfg.RunnerLabels,
 			Name:          instanceName,
 			WorkFolder:    &workfolder,
@@ -29,37 +24,80 @@ func GenerateRunnerConfig(installationID int64, owner, repository, instanceName 
 		})
 		if err != nil {
 			err = fmt.Errorf("failed to generate jitConfig: %w", err)
-			return nil, "", err
+			return "", err
 		}
-		encodedJITConfig := jitConfig.GetEncodedJITConfig()
-		configMetadata = &compute.MetadataItems{
-			Key:   "github_runner_config",
-			Value: &encodedJITConfig,
+	} else {
+		jitConfig, _, err = client.Actions.GenerateOrgJITConfig(ctx, owner, &github.GenerateJITConfigRequest{
+			Labels:        cfg.RunnerLabels,
+			Name:          instanceName,
+			WorkFolder:    &workfolder,
+			RunnerGroupID: 1,
+		})
+		if err != nil {
+			err = fmt.Errorf("failed to generate jitConfig: %w", err)
+			return "", err
+		}
+	}
+
+	encodedJITConfig := jitConfig.GetEncodedJITConfig()
+	return encodedJITConfig, nil
+}
+
+func generateStandardConfig(owner, repository string, useOrgRunners bool, ctx context.Context, client *github.Client) (string, error) {
+	configItems := []string{fmt.Sprintf("--labels %s", strings.Join(cfg.RunnerLabels, ","))}
+	var token *github.RegistrationToken
+	var err error
+
+	if !useOrgRunners {
+		token, _, err = client.Actions.CreateRegistrationToken(ctx, owner, repository)
+		if err != nil {
+			err = fmt.Errorf("failed to generate registration token: %w", err)
+			return "", err
+		}
+
+		configItems = append(configItems, fmt.Sprintf("--url https://github.com/%s/%s", owner, repository))
+	} else {
+		token, _, err = client.Actions.CreateOrganizationRegistrationToken(ctx, owner)
+		if err != nil {
+			err = fmt.Errorf("failed to generate registration token: %w", err)
+			return "", err
+		}
+		configItems = append(configItems, fmt.Sprintf("--url https://github.com/%s", owner))
+	}
+
+	configItems = append(configItems, fmt.Sprintf("--token %s", token.GetToken()))
+
+	if cfg.Ephemeral {
+		configItems = append(configItems, "--ephemeral")
+	}
+	githubRunnerConfig := strings.Join(configItems, " ")
+	return githubRunnerConfig, nil
+}
+
+func GenerateRunnerConfig(installationID int64, owner, repository, instanceName string, useOrgRunners bool, ctx context.Context) (string, string, error) {
+	client, err := getClient(installationID)
+	if err != nil {
+		return "", "", err
+	}
+
+	var githubRunnerConfig string
+	var useJitConfigStr string
+	if cfg.Ephemeral && cfg.UseJitConfig {
+		useJitConfigStr = "true"
+		githubRunnerConfig, err = generateJitConfig(owner, repository, instanceName, useOrgRunners, ctx, client)
+		if err != nil {
+			slog.Error("Failed to generate JIT config", slog.String("error", err.Error()))
+			return "", "", err
 		}
 	} else {
 		useJitConfigStr = "false"
-		token, _, err := client.Actions.CreateRegistrationToken(ctx, owner, repository)
+		githubRunnerConfig, err = generateStandardConfig(owner, repository, useOrgRunners, ctx, client)
 		if err != nil {
-			err = fmt.Errorf("failed to generate registration token: %w", err)
-			return nil, "", err
-		}
-
-		configItems := []string{
-			fmt.Sprintf("--url https://github.com/%s/%s", owner, repository),
-			fmt.Sprintf("--token %s", token.GetToken()),
-			fmt.Sprintf("--labels %s", strings.Join(cfg.RunnerLabels, ",")),
-		}
-
-		if cfg.Ephemeral {
-			configItems = append(configItems, "--ephemeral")
-		}
-		githubRunnerConfig := strings.Join(configItems, " ")
-		configMetadata = &compute.MetadataItems{
-			Key:   "github_runner_config",
-			Value: &githubRunnerConfig,
+			slog.Error("Failed to generate standard config", slog.String("error", err.Error()))
+			return "", "", err
 		}
 	}
-	return configMetadata, useJitConfigStr, nil
+	return githubRunnerConfig, useJitConfigStr, nil
 }
 
 func RemoveRunnerForInstance(instance *compute.Instance, ctx context.Context) (bool, error) {
