@@ -8,7 +8,7 @@ import (
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 )
 
-func AddSecret(projectId, name, value, serviceAccount string, ctx context.Context) error {
+func addSecret(projectID, name, value, serviceAccount string, ctx context.Context) error {
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to setup client: %v", err)
@@ -33,7 +33,7 @@ func AddSecret(projectId, name, value, serviceAccount string, ctx context.Contex
 	}
 
 	createSecretReq := &secretmanagerpb.CreateSecretRequest{
-		Parent:   fmt.Sprintf("projects/%s", projectId),
+		Parent:   fmt.Sprintf("projects/%s", projectID),
 		SecretId: name,
 		Secret: &secretmanagerpb.Secret{
 			Replication: replication,
@@ -72,13 +72,13 @@ func AddSecret(projectId, name, value, serviceAccount string, ctx context.Contex
 	return nil
 }
 
-func DeleteSecret(projectId, name string, ctx context.Context) error {
+func deleteSecret(projectID, name string, ctx context.Context) error {
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to setup client: %v", err)
 	}
 	defer client.Close()
-	secretName := fmt.Sprintf("projects/%s/secrets/%s", projectId, name)
+	secretName := fmt.Sprintf("projects/%s/secrets/%s", projectID, name)
 	err = client.DeleteSecret(ctx, &secretmanagerpb.DeleteSecretRequest{Name: secretName})
 	if err != nil {
 		return fmt.Errorf("failed to delete secret: %v", err)

@@ -9,8 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/gcp"
-	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 	"google.golang.org/api/compute/v1"
 )
 
@@ -26,7 +24,7 @@ func (h *ControlPlaneHandler) StopRunner(w http.ResponseWriter, r *http.Request)
 
 	slog.Debug("Listing managed instances")
 
-	instanceList, err := h.computeService.Instances.AggregatedList(h.cfg.ProjectID).Filter("labels.ghr-managed=true").Do()
+	instanceList, err := h.gcpClient.GetInstances()
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error listing instances: %s", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -59,7 +57,7 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 		return
 	}
 
-	removed, err := ghclient.RemoveRunnerForInstance(instance, ctx)
+	removed, err := h.githubClient.RemoveRunnerForInstance(instance, ctx)
 	if err != nil {
 		slog.Error("Failed to remove runner", slog.String("error", err.Error()))
 		return
@@ -71,34 +69,12 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 
 	slog.Info(fmt.Sprintf("Runner %s removed", instance.Name))
 
-	err = gcp.DeleteSecret(h.cfg.ProjectID, fmt.Sprintf("%s-config", instance.Name), ctx)
-	if err != nil {
-		slog.Warn(fmt.Sprintf("Error deleting secret for instance %s: %s", instance.Name, err))
-	}
-
 	slog.Info(fmt.Sprintf("Deleting instance %s", instance.Name))
 	zoneSplit := strings.Split(instance.Zone, "/")
 	zone := zoneSplit[len(zoneSplit)-1]
-	op, err := h.computeService.Instances.Delete(h.cfg.ProjectID, zone, instance.Name).Do()
+	err = h.gcpClient.DeleteInstance(instance.Name, zone, ctx)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error deleting instance: %s", err))
 		return
 	}
-	for op.Status != "DONE" {
-		time.Sleep(1 * time.Second)
-		op, err = h.computeService.ZoneOperations.Get(h.cfg.ProjectID, zone, op.Name).Do()
-		if err != nil {
-			slog.Error(fmt.Sprintf("Error getting operation status: %s", err))
-			return
-		}
-	}
-	if op.Error != nil {
-		errorMessages := make([]string, 0, len(op.Error.Errors))
-		for _, e := range op.Error.Errors {
-			errorMessages = append(errorMessages, e.Message)
-		}
-		slog.Error(fmt.Sprintf("Error deleting instance: %s", strings.Join(errorMessages, ";")))
-		return
-	}
-	slog.Info(fmt.Sprintf("Instance %s deleted", instance.Name))
 }

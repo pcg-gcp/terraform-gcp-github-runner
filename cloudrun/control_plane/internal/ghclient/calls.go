@@ -10,14 +10,14 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
-func generateJitConfig(owner, repository, instanceName string, useOrgRunners bool, ctx context.Context, client *github.Client) (string, error) {
+func (c *Client) generateJitConfig(owner, repository, instanceName string, useOrgRunners bool, ctx context.Context, client *github.Client) (string, error) {
 	var jitConfig *github.JITRunnerConfig
 	workfolder := "_work"
 	var err error
 
 	if !useOrgRunners {
 		jitConfig, _, err = client.Actions.GenerateRepoJITConfig(ctx, owner, repository, &github.GenerateJITConfigRequest{
-			Labels:        cfg.RunnerLabels,
+			Labels:        c.cfg.RunnerLabels,
 			Name:          instanceName,
 			WorkFolder:    &workfolder,
 			RunnerGroupID: 1,
@@ -28,7 +28,7 @@ func generateJitConfig(owner, repository, instanceName string, useOrgRunners boo
 		}
 	} else {
 		jitConfig, _, err = client.Actions.GenerateOrgJITConfig(ctx, owner, &github.GenerateJITConfigRequest{
-			Labels:        cfg.RunnerLabels,
+			Labels:        c.cfg.RunnerLabels,
 			Name:          instanceName,
 			WorkFolder:    &workfolder,
 			RunnerGroupID: 1,
@@ -43,8 +43,8 @@ func generateJitConfig(owner, repository, instanceName string, useOrgRunners boo
 	return encodedJITConfig, nil
 }
 
-func generateStandardConfig(owner, repository string, useOrgRunners bool, ctx context.Context, client *github.Client) (string, error) {
-	configItems := []string{fmt.Sprintf("--labels %s", strings.Join(cfg.RunnerLabels, ","))}
+func (c *Client) generateStandardConfig(owner, repository string, useOrgRunners bool, ctx context.Context, client *github.Client) (string, error) {
+	configItems := []string{fmt.Sprintf("--labels %s", strings.Join(c.cfg.RunnerLabels, ","))}
 	var token *github.RegistrationToken
 	var err error
 
@@ -67,31 +67,31 @@ func generateStandardConfig(owner, repository string, useOrgRunners bool, ctx co
 
 	configItems = append(configItems, fmt.Sprintf("--token %s", token.GetToken()))
 
-	if cfg.Ephemeral {
+	if c.cfg.Ephemeral {
 		configItems = append(configItems, "--ephemeral")
 	}
 	githubRunnerConfig := strings.Join(configItems, " ")
 	return githubRunnerConfig, nil
 }
 
-func GenerateRunnerConfig(installationID int64, owner, repository, instanceName string, useOrgRunners bool, ctx context.Context) (string, string, error) {
-	client, err := getClient(installationID)
+func (c *Client) GenerateRunnerConfig(installationID int64, owner, repository, instanceName string, useOrgRunners bool, ctx context.Context) (string, string, error) {
+	client, err := c.getClient(installationID)
 	if err != nil {
 		return "", "", err
 	}
 
 	var githubRunnerConfig string
 	var useJitConfigStr string
-	if cfg.Ephemeral && cfg.UseJitConfig {
+	if c.cfg.Ephemeral && c.cfg.UseJitConfig {
 		useJitConfigStr = "true"
-		githubRunnerConfig, err = generateJitConfig(owner, repository, instanceName, useOrgRunners, ctx, client)
+		githubRunnerConfig, err = c.generateJitConfig(owner, repository, instanceName, useOrgRunners, ctx, client)
 		if err != nil {
 			slog.Error("Failed to generate JIT config", slog.String("error", err.Error()))
 			return "", "", err
 		}
 	} else {
 		useJitConfigStr = "false"
-		githubRunnerConfig, err = generateStandardConfig(owner, repository, useOrgRunners, ctx, client)
+		githubRunnerConfig, err = c.generateStandardConfig(owner, repository, useOrgRunners, ctx, client)
 		if err != nil {
 			slog.Error("Failed to generate standard config", slog.String("error", err.Error()))
 			return "", "", err
@@ -100,32 +100,30 @@ func GenerateRunnerConfig(installationID int64, owner, repository, instanceName 
 	return githubRunnerConfig, useJitConfigStr, nil
 }
 
-func RemoveRunnerForInstance(instance *compute.Instance, ctx context.Context) (bool, error) {
+func (c *Client) RemoveRunnerForInstance(instance *compute.Instance, ctx context.Context) (bool, error) {
 	var installationId int64
 
 	repo := instance.Labels["ghr-repo"]
 	owner := instance.Labels["ghr-owner"]
 	runnerType := instance.Labels["ghr-type"]
 
-	appsClient := getAppsClient()
-
 	switch runnerType {
 	case "repo":
-		installation, _, err := appsClient.Apps.FindRepositoryInstallation(ctx, owner, repo)
+		installation, _, err := c.appsClient.Apps.FindRepositoryInstallation(ctx, owner, repo)
 		if err != nil {
 			err = fmt.Errorf("failed to find installation: %w", err)
 			return false, err
 		}
 		installationId = installation.GetID()
 	case "org":
-		installation, _, err := appsClient.Apps.FindOrganizationInstallation(ctx, owner)
+		installation, _, err := c.appsClient.Apps.FindOrganizationInstallation(ctx, owner)
 		if err != nil {
 			err = fmt.Errorf("failed to find installation: %w", err)
 			return false, err
 		}
 		installationId = installation.GetID()
 	}
-	client, err := getClient(installationId)
+	client, err := c.getClient(installationId)
 	if err != nil {
 		err = fmt.Errorf("failed to create client: %w", err)
 		return false, err
@@ -179,8 +177,8 @@ func RemoveRunnerForInstance(instance *compute.Instance, ctx context.Context) (b
 	return true, nil
 }
 
-func GetJobStatus(jobID, installationID int64, owner, repo string, ctx context.Context) (string, error) {
-	client, err := getClient(installationID)
+func (c *Client) GetJobStatus(jobID, installationID int64, owner, repo string, ctx context.Context) (string, error) {
+	client, err := c.getClient(installationID)
 	if err != nil {
 		err = fmt.Errorf("failed to create client: %w", err)
 		return "", err

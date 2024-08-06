@@ -12,9 +12,10 @@ module "github_runners" {
 
   enable_debug = true
 
-  project_id = "cw-td-sandbox"
-  region     = "europe-west1"
-  zone       = "europe-west1-b"
+  project_id    = "cw-td-sandbox"
+  region        = "europe-west1"
+  zone          = "europe-west1-b"
+  allowed_zones = ["europe-west1-b", "europe-west1-c", "europe-west1-d"]
 
   vpc_name    = "default"
   subnet_name = "default"
@@ -22,8 +23,8 @@ module "github_runners" {
   github_app_private_key_base64 = data.sops_file.secrets.data["github.private_key"]
   github_app_id                 = data.sops_file.secrets.data["github.app_id"]
 
-  ephemeral      = true
-  use_jit_config = true
+  ephemeral      = false
+  use_jit_config = false
 
   runner_image_path       = "projects/cw-td-sandbox/global/images/ubuntu-2404-ghr-20240801-211951"
   runner_machine_type     = "n2-standard-2"

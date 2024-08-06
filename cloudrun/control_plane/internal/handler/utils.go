@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-
-	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 )
 
 func parseStartUpRequest(request *http.Request) (*eventSummaryMessage, error) {
@@ -23,7 +21,7 @@ func parseStartUpRequest(request *http.Request) (*eventSummaryMessage, error) {
 }
 
 func (h *ControlPlaneHandler) makeStartUpDecision(m *eventSummaryMessage, ctx context.Context) (bool, error) {
-	jobStatus, err := ghclient.GetJobStatus(m.ID, m.InstallationID, m.Owner, m.Repository, ctx)
+	jobStatus, err := h.githubClient.GetJobStatus(m.ID, m.InstallationID, m.Owner, m.Repository, ctx)
 	if err != nil {
 		err = fmt.Errorf("failed to get jobStatus: %w", err)
 		return false, err
@@ -33,12 +31,20 @@ func (h *ControlPlaneHandler) makeStartUpDecision(m *eventSummaryMessage, ctx co
 		return false, nil
 	}
 
-	instanceList, err := h.computeService.Instances.AggregatedList(h.cfg.ProjectID).Filter("labels.ghr-managed=true").Do()
+	instanceList, err := h.gcpClient.GetInstances()
 	if err != nil {
 		err = fmt.Errorf("failed to get instance list: %w", err)
 		return false, err
 	}
-	instanceCount := len(instanceList.Items[h.cfg.Zone].Instances)
+	instanceCount := 0
+	availableZones, err := h.gcpClient.GetAvailableZones()
+	if err != nil {
+		err = fmt.Errorf("failed to get available zones: %w", err)
+		return false, err
+	}
+	for _, zone := range availableZones {
+		instanceCount += len(instanceList.Items[zone].Instances)
+	}
 	if instanceCount >= h.cfg.MaxRunnerCount {
 		slog.Warn("Already reached max instance count. Scale up not possible", "instance count", instanceCount)
 		return false, nil

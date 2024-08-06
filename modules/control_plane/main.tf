@@ -50,8 +50,16 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.project_id
       }
       env {
+        name  = "REGION"
+        value = var.region
+      }
+      env {
         name  = "ZONE"
         value = var.zone
+      }
+      env {
+        name  = "ALLOWED_ZONES"
+        value = join(",", var.allowed_zones)
       }
       env {
         name  = "ENABLE_DEBUG"

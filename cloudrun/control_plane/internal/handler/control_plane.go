@@ -1,15 +1,15 @@
 package handler
 
 import (
-	"context"
-
 	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/config"
-	"google.golang.org/api/compute/v1"
+	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/gcp"
+	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/ghclient"
 )
 
 type ControlPlaneHandler struct {
-	cfg            *config.Config
-	computeService *compute.Service
+	cfg          *config.Config
+	gcpClient    *gcp.Client
+	githubClient *ghclient.Client
 }
 
 type eventSummaryMessage struct {
@@ -20,11 +20,10 @@ type eventSummaryMessage struct {
 	InstallationID int64  `json:"installationId"`
 }
 
-func New(cfg *config.Config) (*ControlPlaneHandler, error) {
-	computeService, err := compute.NewService(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	handler := &ControlPlaneHandler{cfg: cfg, computeService: computeService}
-	return handler, nil
+func New(cfg *config.Config, githubClient *ghclient.Client, gcpClient *gcp.Client) (*ControlPlaneHandler, error) {
+	return &ControlPlaneHandler{
+		cfg:          cfg,
+		githubClient: githubClient,
+		gcpClient:    gcpClient,
+	}, nil
 }

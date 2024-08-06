@@ -2,10 +2,11 @@ package config
 
 type Config struct {
 	ProjectID            string   `env:"PROJECT_ID,required"`
-	Zone                 string   `env:"ZONE,required"`
+	Region               string   `env:"REGION,required"`
 	GithubAppPrivateKey  string   `env:"GITHUB_APP_PRIVATE_KEY,required"`
 	InstanceTemplateName string   `env:"INSTANCE_TEMPLATE_NAME,required"`
 	RunnerLabels         []string `env:"RUNNER_LABELS,required"`
+	AllowedZones         []string `env:"ALLOWED_ZONES,required"`
 	AppID                int64    `env:"GITHUB_APP_ID,required"`
 	Port                 int      `env:"PORT,default=8080"`
 	MaxRunnerCount       int      `env:"MAX_RUNNER_COUNT,required"`

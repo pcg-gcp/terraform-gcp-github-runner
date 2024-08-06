@@ -15,6 +15,12 @@ variable "zone" {
   default     = "europe-west1-b"
 }
 
+variable "allowed_zones" {
+  type        = list(string)
+  description = "The zones to deploy runner instances into"
+  default     = ["europe-west1-b", "europe-west1-c", "europe-west1-d"]
+}
+
 variable "enable_debug" {
   type        = bool
   description = "Whether to enable debug mode"
