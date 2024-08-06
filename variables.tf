@@ -90,6 +90,12 @@ variable "use_jit_config" {
   default     = false
 }
 
+variable "use_org_runners" {
+  type        = bool
+  description = "Whether to use github organization runners"
+  default     = false
+}
+
 variable "max_runner_count" {
   type        = number
   description = "The maximum number of runners that should be deployed at the same time"

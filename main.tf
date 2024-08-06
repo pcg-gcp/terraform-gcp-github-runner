@@ -62,8 +62,9 @@ module "control_plane" {
 
   max_instance_count = 2
 
-  ephemeral      = var.ephemeral
-  use_jit_config = var.use_jit_config
+  ephemeral       = var.ephemeral
+  use_jit_config  = var.use_jit_config
+  use_org_runners = var.use_org_runners
 
   min_runner_count = var.min_runner_count
   max_runner_count = var.max_runner_count
