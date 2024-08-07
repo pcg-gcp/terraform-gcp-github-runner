@@ -54,12 +54,12 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.region
       }
       env {
-        name  = "ZONE"
-        value = var.zone
-      }
-      env {
         name  = "ALLOWED_ZONES"
         value = join(",", var.allowed_zones)
+      }
+      env {
+        name  = "USE_STRICT_ZONE_ORDER"
+        value = var.use_strict_zone_order
       }
       env {
         name  = "ENABLE_DEBUG"

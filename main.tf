@@ -53,12 +53,12 @@ module "runner_template" {
 }
 
 module "control_plane" {
-  source        = "./modules/control_plane"
-  project_id    = var.project_id
-  region        = var.region
-  zone          = var.zone
-  allowed_zones = var.allowed_zones
+  source     = "./modules/control_plane"
+  project_id = var.project_id
+  region     = var.region
 
+  allowed_zones         = var.allowed_zones
+  use_strict_zone_order = var.use_strict_zone_order
 
   enable_debug = var.enable_debug
 

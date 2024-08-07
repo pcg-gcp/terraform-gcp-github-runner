@@ -12,10 +12,8 @@ module "github_runners" {
 
   enable_debug = true
 
-  project_id    = "cw-td-sandbox"
-  region        = "europe-west1"
-  zone          = "europe-west1-b"
-  allowed_zones = ["europe-west1-b", "europe-west1-c", "europe-west1-d"]
+  project_id = "cw-td-sandbox"
+  region     = "europe-west1"
 
   vpc_name    = "default"
   subnet_name = "default"

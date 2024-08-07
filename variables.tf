@@ -9,16 +9,24 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "zone" {
-  type        = string
-  description = "The zone to deploy runner instances into"
-  default     = "europe-west1-b"
-}
-
 variable "allowed_zones" {
   type        = list(string)
-  description = "The zones to deploy runner instances into"
-  default     = ["europe-west1-b", "europe-west1-c", "europe-west1-d"]
+  description = <<-EOT
+  The zones to deploy the runner instances into.
+  If not set the runner will be deployed into any zone in the region.
+  Also see use_strict_zone_order
+  EOT
+  default     = []
+}
+
+variable "use_strict_zone_order" {
+  type        = bool
+  description = <<-EOT
+  If this is set to true and allowed_zones is set the runner will always be deployed in the first available zone in the list unless it is unavailable.
+  If allowed_zones is not set the first zone returned by the API will be used.
+  Otherwise the runner will be deployed in a random zone either from the allowed_zones list or from the API.
+  EOT
+  default     = false
 }
 
 variable "enable_debug" {

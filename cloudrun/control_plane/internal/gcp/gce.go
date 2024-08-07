@@ -35,7 +35,7 @@ func (c *Client) CreateInstance(instanceName, repository, owner, githubRunnerCon
 		return err
 	}
 
-	zone, err := c.pickRandomZone()
+	zone, err := c.pickZone()
 	if err != nil {
 		err = fmt.Errorf("error picking random zone: %w", err)
 		slog.Error(err.Error())
@@ -137,13 +137,20 @@ func (c *Client) GetAvailableZones() ([]string, error) {
 	return availableZones, nil
 }
 
-func (c *Client) pickRandomZone() (string, error) {
+func (c *Client) pickZone() (string, error) {
 	availableZones, err := c.GetAvailableZones()
 	if err != nil {
 		return "", err
 	}
 	if len(availableZones) == 0 {
 		return "", fmt.Errorf("no available zones found")
+	}
+
+	if len(c.cfg.AllowedZones) == 0 {
+		if c.cfg.UseStrictZoneOrder {
+			return availableZones[0], nil
+		}
+		return availableZones[rand.Intn(len(availableZones))], nil
 	}
 	validZones := make([]string, 0, len(availableZones))
 	for _, zone := range availableZones {
@@ -155,6 +162,9 @@ func (c *Client) pickRandomZone() (string, error) {
 	}
 	if len(validZones) == 0 {
 		return "", fmt.Errorf("no valid zones found")
+	}
+	if c.cfg.UseStrictZoneOrder {
+		return validZones[0], nil
 	}
 	return validZones[rand.Intn(len(validZones))], nil
 }

@@ -11,6 +11,7 @@ type Config struct {
 	Port                 int      `env:"PORT,default=8080"`
 	MaxRunnerCount       int      `env:"MAX_RUNNER_COUNT,required"`
 	MinRunnerCount       int      `env:"MIN_RUNNER_COUNT,required"`
+	UseStrictZoneOrder   bool     `env:"USE_STRICT_ZONE_ORDER,required"`
 	Ephemeral            bool     `env:"EPHEMERAL,required"`
 	UseJitConfig         bool     `env:"USE_JIT_CONFIG,required"`
 	UseOrgRunners        bool     `env:"USE_ORG_RUNNERS,required"`
