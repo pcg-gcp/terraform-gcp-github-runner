@@ -56,6 +56,36 @@ variable "runner_machine_type" {
   description = "The machine type to deploy"
 }
 
+variable "runner_disk_type" {
+  type        = string
+  description = "The disk type to deploy"
+  default     = "pd-balanced"
+}
+
+variable "runner_disk_size_gb" {
+  type        = number
+  description = "The disk size in GB to deploy"
+  default     = null
+}
+
+variable "runner_additional_disks" {
+  type        = list(any)
+  description = "Additional disks to attach to the runner"
+  default     = []
+}
+
+variable "runner_on_host_maintenance" {
+  type        = string
+  description = "The maintenance policy for the runner"
+  default     = "MIGRATE"
+}
+
+variable "runner_use_spot_vms" {
+  type        = bool
+  description = "Whether to use spot VMs for the runner"
+  default     = false
+}
+
 variable "runner_user" {
   type        = string
   description = "The user to run the runner as"

@@ -23,6 +23,31 @@ variable "machine_type" {
   description = "The machine type to deploy"
 }
 
+variable "disk_type" {
+  type        = string
+  description = "The disk type to deploy"
+}
+
+variable "disk_size_gb" {
+  type        = number
+  description = "The disk size in GB to deploy"
+}
+
+variable "additional_disks" {
+  type        = list(any)
+  description = "Additional disks to attach to the runner"
+}
+
+variable "on_host_maintenance" {
+  type        = string
+  description = "The maintenance policy for the runner"
+}
+
+variable "use_spot_vms" {
+  type        = bool
+  description = "Whether to use spot VMs for the runner"
+}
+
 variable "image_path" {
   type        = string
   description = "The image to deploy"

@@ -53,25 +53,50 @@ resource "google_storage_bucket_iam_member" "runner" {
   member = "serviceAccount:${google_service_account.runner.email}"
 }
 
+locals {
+  automatic_restart  = var.use_spot_vms ? false : true
+  preemptible        = var.use_spot_vms
+  provisioning_model = var.use_spot_vms ? "SPOT" : "STANDARD"
+}
+
 resource "google_compute_instance_template" "runner" {
   project     = var.project_id
   name        = "runner-template"
   description = "Runner Instance Template"
+  region      = var.region
 
   machine_type   = var.machine_type
   can_ip_forward = false
 
   scheduling {
-    automatic_restart   = true
-    on_host_maintenance = "MIGRATE"
+    automatic_restart   = local.automatic_restart
+    on_host_maintenance = var.on_host_maintenance
+    preemptible         = local.preemptible
+    provisioning_model  = local.provisioning_model
   }
 
   disk {
     source_image = var.image_path
-    disk_type    = "pd-balanced"
+    disk_type    = var.disk_type
+    disk_size_gb = var.disk_size_gb
     auto_delete  = true
     boot         = true
   }
+
+  dynamic "disk" {
+    for_each = var.additional_disks
+    content {
+      source_image     = disk.value.source_image
+      disk_type        = disk.value.disk_type
+      disk_size_gb     = disk.value.disk_size_gb
+      auto_delete      = disk.value.auto_delete
+      provisioned_iops = disk.value.provisioned_iops
+      type             = disk.value.type
+      source_snapshot  = disk.value.source_snapshot
+      boot             = false
+    }
+  }
+
 
   network_interface {
     network    = var.vpc_name

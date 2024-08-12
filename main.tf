@@ -42,8 +42,15 @@ module "runner_template" {
   vpc_name    = var.vpc_name
   subnet_name = var.subnet_name
 
-  image_path   = var.runner_image_path
-  machine_type = var.runner_machine_type
+  image_path          = var.runner_image_path
+  machine_type        = var.runner_machine_type
+  on_host_maintenance = var.runner_on_host_maintenance
+  use_spot_vms        = var.runner_use_spot_vms
+
+
+  disk_type        = var.runner_disk_type
+  disk_size_gb     = var.runner_disk_size_gb
+  additional_disks = var.runner_additional_disks
 
   runner_user          = var.runner_user
   runner_dir           = var.runner_dir
