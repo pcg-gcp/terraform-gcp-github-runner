@@ -2,17 +2,31 @@ locals {
   runner_labels = sort(distinct(concat(["self-hosted", "linux", "x64"], var.runner_extra_labels)))
 }
 
+resource "google_project_service" "required_services" {
+  for_each = toset(["compute.googleapis.com", "run.googleapis.com", "cloudtasks.googleapis.com", "secretmanager.googleapis.com"])
+  project  = var.project_id
+  service  = each.key
+}
+
 resource "google_cloud_tasks_queue" "github_events" {
   name     = "github-job-events"
   location = var.region
+
+  depends_on = [google_project_service.required_services["cloudtasks.googleapis.com"]]
 }
 
 resource "google_secret_manager_secret" "webhook_secret" {
   secret_id = "webhook-secret"
 
   replication {
-    auto {}
+    user_managed {
+      replicas {
+        location = var.region
+      }
+    }
   }
+
+  depends_on = [google_project_service.required_services["secretmanager.googleapis.com"]]
 }
 
 resource "google_secret_manager_secret_version" "webhook_secret" {
@@ -25,8 +39,14 @@ resource "google_secret_manager_secret" "github_auth_secret" {
   secret_id = "github-auth-secret"
 
   replication {
-    auto {}
+    user_managed {
+      replicas {
+        location = var.region
+      }
+    }
   }
+
+  depends_on = [google_project_service.required_services["secretmanager.googleapis.com"]]
 }
 
 resource "google_secret_manager_secret_version" "github_auth_secret" {
@@ -57,6 +77,8 @@ module "runner_template" {
   runner_version       = var.runner_version
   node_version         = var.node_version
   include_install_step = var.include_install_step
+
+  depends_on = [google_project_service.required_services]
 }
 
 module "control_plane" {
@@ -92,6 +114,8 @@ module "control_plane" {
   shutdown_schedule          = var.shutdown_schedule
   shutdown_schedule_timezone = var.shutdown_schedule_timezone
   shutdown_attempt_timeout   = var.shutdown_attempt_timeout
+
+  depends_on = [google_project_service.required_services]
 }
 
 module "webhook" {
@@ -116,4 +140,6 @@ module "webhook" {
 
   forward_delay_seconds = var.forward_delay_seconds
   runner_labels         = local.runner_labels
+
+  depends_on = [google_project_service.required_services]
 }
