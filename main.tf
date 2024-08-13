@@ -8,7 +8,7 @@ resource "google_project_service" "required_services" {
   service  = each.key
 }
 
-resource "random_string" "bucket_suffix" {
+resource "random_string" "queue_suffix" {
   length  = 5
   special = false
   upper   = false
