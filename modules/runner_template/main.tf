@@ -26,7 +26,11 @@ resource "google_project_iam_member" "runner" {
 }
 
 resource "random_string" "bucket_suffix" {
-  length = 16
+  length  = 10
+  special = false
+  upper   = false
+  numeric = true
+  lower   = true
 }
 
 resource "google_storage_bucket" "runner_bucket" {
