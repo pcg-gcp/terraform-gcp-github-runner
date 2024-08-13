@@ -25,9 +25,13 @@ resource "google_project_iam_member" "runner" {
   member   = "serviceAccount:${google_service_account.runner.email}"
 }
 
+resource "random_string" "bucket_suffix" {
+  length = 16
+}
+
 resource "google_storage_bucket" "runner_bucket" {
   project       = var.project_id
-  name          = "ghr-scripts-bucket"
+  name          = "ghr-scripts-bucket-${random_string.bucket_suffix.result}"
   location      = var.region
   force_destroy = true
 
