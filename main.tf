@@ -8,8 +8,16 @@ resource "google_project_service" "required_services" {
   service  = each.key
 }
 
+resource "random_string" "bucket_suffix" {
+  length  = 5
+  special = false
+  upper   = false
+  numeric = true
+  lower   = true
+}
+
 resource "google_cloud_tasks_queue" "github_events" {
-  name     = "github-job-events"
+  name     = "github-job-events-${random_string.bucket_suffix.result}"
   location = var.region
 
   depends_on = [google_project_service.required_services["cloudtasks.googleapis.com"]]
