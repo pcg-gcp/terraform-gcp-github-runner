@@ -36,7 +36,7 @@ resource "google_storage_bucket" "runner_bucket" {
 
 resource "google_storage_bucket_object" "startup_script" {
   name = "setup_runner.sh"
-  content = templatefile("../../templates/runners/setup_runner.tftpl", {
+  content = templatefile("${path.module}/../../templates/runners/setup_runner.tftpl", {
     include_install     = var.include_install_step,
     include_run         = true,
     node_version        = local.effective_node_version,
