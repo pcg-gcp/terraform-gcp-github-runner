@@ -17,7 +17,7 @@ resource "random_string" "queue_suffix" {
 }
 
 resource "google_cloud_tasks_queue" "github_events" {
-  name     = "github-job-events-${random_string.bucket_suffix.result}"
+  name     = "github-job-events-${random_string.queue_suffix.result}"
   location = var.region
 
   depends_on = [google_project_service.required_services["cloudtasks.googleapis.com"]]
