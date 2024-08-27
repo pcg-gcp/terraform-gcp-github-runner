@@ -1,6 +1,6 @@
 module github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/webhook
 
-go 1.22
+go 1.23
 
 require (
 	cloud.google.com/go/cloudtasks v1.13.0
