@@ -6,7 +6,7 @@ variable "project_id" {
 variable "region" {
   type        = string
   description = "The region to deploy all resources into"
-  default     = "europe-west1"
+  default     = "europe-west3"
 }
 
 variable "allowed_zones" {
