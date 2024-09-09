@@ -5,7 +5,7 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.8 |
-| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 5.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | ~> 6.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | ~> 3.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.0 |
 
@@ -13,7 +13,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | ~> 5.0 |
+| <a name="provider_google"></a> [google](#provider\_google) | ~> 6.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | ~> 3.0 |
 
 ## Modules
@@ -53,7 +53,7 @@
 | <a name="input_min_runner_count"></a> [min\_runner\_count](#input\_min\_runner\_count) | The minimum number of runners that should be deployed at all times | `number` | `0` | no |
 | <a name="input_node_version"></a> [node\_version](#input\_node\_version) | NodeJS version to install | `string` | `""` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The GCP project ID to deploy all resources into | `string` | n/a | yes |
-| <a name="input_region"></a> [region](#input\_region) | The region to deploy all resources into | `string` | `"europe-west1"` | no |
+| <a name="input_region"></a> [region](#input\_region) | The region to deploy all resources into | `string` | `"europe-west3"` | no |
 | <a name="input_runner_additional_disks"></a> [runner\_additional\_disks](#input\_runner\_additional\_disks) | Additional disks to attach to the runner | `list(any)` | `[]` | no |
 | <a name="input_runner_dir"></a> [runner\_dir](#input\_runner\_dir) | The directory to run the runner in | `string` | `"/opt/github-runner"` | no |
 | <a name="input_runner_disk_size_gb"></a> [runner\_disk\_size\_gb](#input\_runner\_disk\_size\_gb) | The disk size in GB to deploy | `number` | `null` | no |
