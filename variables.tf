@@ -45,6 +45,30 @@ variable "subnet_name" {
   description = "The subnet to deploy runner instances into"
 }
 
+variable "use_remote_repository" {
+  type        = bool
+  description = "Whether to use a remote repository for caching images"
+  default     = true
+}
+
+variable "remote_repository_url" {
+  type        = string
+  description = "The URL of the remote repository to clone. This is only used if use_remote_repository is set to true"
+  default     = "https://ghcr.io"
+}
+
+variable "remote_webhook_image_name" {
+  type        = string
+  description = "The name of the webhook image in the remote repository. This should only be the image name as it is combined with the repository url to form the full path. This is only used if use_remote_repository is set to true"
+  default     = "pcg-gcp/terraform-gcp-github-runner/webhook"
+}
+
+variable "remote_control_plane_image_name" {
+  type        = string
+  description = "The name of the control plane image in the remote repository. This should only be the image name as it is combined with the repository url to form the full path. This is only used if use_remote_repository is set to true"
+  default     = "pcg-gcp/terraform-gcp-github-runner/control-plane"
+}
+
 variable "runner_image_path" {
   type        = string
   description = "The image to deploy"
@@ -154,13 +178,14 @@ variable "min_runner_count" {
 
 variable "control_plane_oci_image" {
   type        = string
-  description = "The OCI image to deploy"
+  description = "The control plane OCI image to deploy. This needs to be the full path without the image tag. This is only used if use_remote_repository is set to false"
+  default     = ""
 }
 
 variable "control_plane_version" {
   type        = string
-  description = "The version of the control plane to deploy"
-  default     = "latest"
+  description = "The version of the control plane to deploy. If not set the module version will be used"
+  default     = ""
 }
 
 variable "webhook_secret" {
@@ -182,14 +207,14 @@ variable "github_app_private_key_base64" {
 
 variable "webhook_oci_image" {
   type        = string
-  description = "The OCI image to deploy"
-  default     = "latest"
+  description = "The webhook OCI image to deploy. This needs to be the full path withouth the image tag. This is only used if use_remote_repository is set to false"
+  default     = ""
 }
 
 variable "webhook_version" {
   type        = string
-  description = "The version of the webhook to deploy"
-  default     = "latest"
+  description = "The version of the webhook to deploy. If not set the module version will be used"
+  default     = ""
 }
 
 variable "forward_delay_seconds" {

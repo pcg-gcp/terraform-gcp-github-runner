@@ -24,11 +24,9 @@ module "github_runners" {
   ephemeral      = false
   use_jit_config = false
 
-  runner_image_path       = "projects/cw-td-sandbox/global/images/ubuntu-2404-ghr-20240909-142441"
-  runner_machine_type     = "n2-standard-2"
-  control_plane_oci_image = "europe-docker.pkg.dev/cw-td-sandbox/docker-repo/control-plane"
-  webhook_secret          = random_id.id.hex
-  webhook_oci_image       = "europe-docker.pkg.dev/cw-td-sandbox/docker-repo/webhook"
+  runner_image_path   = "projects/cw-td-sandbox/global/images/ubuntu-2404-ghr-20240909-142441"
+  runner_machine_type = "n2-standard-2"
+  webhook_secret      = random_id.id.hex
 
   include_install_step = false
 

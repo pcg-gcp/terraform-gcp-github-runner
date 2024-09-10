@@ -1,5 +1,6 @@
-resource "google_artifact_registry_repository" "my-repo" {
+resource "google_artifact_registry_repository" "image_cache" {
   location      = var.region
+  project       = var.project_id
   repository_id = "ghr-image-cache"
   description   = "A repository for caching images for the Github Action Runner Cloud Run instances."
   format        = "DOCKER"
@@ -7,7 +8,7 @@ resource "google_artifact_registry_repository" "my-repo" {
   remote_repository_config {
     docker_repository {
       custom_repository {
-        uri = var.repository_uri
+        uri = var.remote_repository_url
       }
     }
   }
