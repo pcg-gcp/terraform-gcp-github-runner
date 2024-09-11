@@ -20,6 +20,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_artifact_registry"></a> [artifact\_registry](#module\_artifact\_registry) | ./modules/artifact_registry | n/a |
 | <a name="module_control_plane"></a> [control\_plane](#module\_control\_plane) | ./modules/control_plane | n/a |
 | <a name="module_runner_template"></a> [runner\_template](#module\_runner\_template) | ./modules/runner_template | n/a |
 | <a name="module_webhook"></a> [webhook](#module\_webhook) | ./modules/webhook | n/a |
@@ -41,8 +42,8 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_allowed_zones"></a> [allowed\_zones](#input\_allowed\_zones) | The zones to deploy the runner instances into.<br>If not set the runner will be deployed into any zone in the region.<br>Also see use\_strict\_zone\_order | `list(string)` | `[]` | no |
-| <a name="input_control_plane_oci_image"></a> [control\_plane\_oci\_image](#input\_control\_plane\_oci\_image) | The OCI image to deploy | `string` | n/a | yes |
-| <a name="input_control_plane_version"></a> [control\_plane\_version](#input\_control\_plane\_version) | The version of the control plane to deploy | `string` | `"latest"` | no |
+| <a name="input_control_plane_oci_image"></a> [control\_plane\_oci\_image](#input\_control\_plane\_oci\_image) | The control plane OCI image to deploy. This needs to be the full path without the image tag. This is only used if use\_remote\_repository is set to false | `string` | `""` | no |
+| <a name="input_control_plane_version"></a> [control\_plane\_version](#input\_control\_plane\_version) | The version of the control plane to deploy. If not set the module version will be used | `string` | `""` | no |
 | <a name="input_enable_debug"></a> [enable\_debug](#input\_enable\_debug) | Whether to enable debug mode | `bool` | `false` | no |
 | <a name="input_ephemeral"></a> [ephemeral](#input\_ephemeral) | Whether to use ephemeral runners | `bool` | `false` | no |
 | <a name="input_forward_delay_seconds"></a> [forward\_delay\_seconds](#input\_forward\_delay\_seconds) | The number of seconds the webhook handler delays events before forwarding them to the control plane | `number` | `10` | no |
@@ -54,6 +55,9 @@
 | <a name="input_node_version"></a> [node\_version](#input\_node\_version) | NodeJS version to install | `string` | `""` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The GCP project ID to deploy all resources into | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | The region to deploy all resources into | `string` | `"europe-west1"` | no |
+| <a name="input_remote_control_plane_image_name"></a> [remote\_control\_plane\_image\_name](#input\_remote\_control\_plane\_image\_name) | The name of the control plane image in the remote repository. This should only be the image name as it is combined with the repository url to form the full path. This is only used if use\_remote\_repository is set to true | `string` | `"pcg-gcp/terraform-gcp-github-runner/control-plane"` | no |
+| <a name="input_remote_repository_url"></a> [remote\_repository\_url](#input\_remote\_repository\_url) | The URL of the remote repository to clone. This is only used if use\_remote\_repository is set to true | `string` | `"https://ghcr.io"` | no |
+| <a name="input_remote_webhook_image_name"></a> [remote\_webhook\_image\_name](#input\_remote\_webhook\_image\_name) | The name of the webhook image in the remote repository. This should only be the image name as it is combined with the repository url to form the full path. This is only used if use\_remote\_repository is set to true | `string` | `"pcg-gcp/terraform-gcp-github-runner/webhook"` | no |
 | <a name="input_runner_additional_disks"></a> [runner\_additional\_disks](#input\_runner\_additional\_disks) | Additional disks to attach to the runner | `list(any)` | `[]` | no |
 | <a name="input_runner_dir"></a> [runner\_dir](#input\_runner\_dir) | The directory to run the runner in | `string` | `"/opt/github-runner"` | no |
 | <a name="input_runner_disk_size_gb"></a> [runner\_disk\_size\_gb](#input\_runner\_disk\_size\_gb) | The disk size in GB to deploy | `number` | `null` | no |
@@ -71,11 +75,12 @@
 | <a name="input_subnet_name"></a> [subnet\_name](#input\_subnet\_name) | The subnet to deploy runner instances into | `string` | n/a | yes |
 | <a name="input_use_jit_config"></a> [use\_jit\_config](#input\_use\_jit\_config) | Whether to use JIT config | `bool` | `false` | no |
 | <a name="input_use_org_runners"></a> [use\_org\_runners](#input\_use\_org\_runners) | Whether to use github organization runners | `bool` | `false` | no |
+| <a name="input_use_remote_repository"></a> [use\_remote\_repository](#input\_use\_remote\_repository) | Whether to use a remote repository for caching images | `bool` | `true` | no |
 | <a name="input_use_strict_zone_order"></a> [use\_strict\_zone\_order](#input\_use\_strict\_zone\_order) | If this is set to true and allowed\_zones is set the runner will always be deployed in the first available zone in the list unless it is unavailable.<br>If allowed\_zones is not set the first zone returned by the API will be used.<br>Otherwise the runner will be deployed in a random zone either from the allowed\_zones list or from the API. | `bool` | `false` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The VPC to deploy runner instances into | `string` | n/a | yes |
-| <a name="input_webhook_oci_image"></a> [webhook\_oci\_image](#input\_webhook\_oci\_image) | The OCI image to deploy | `string` | `"latest"` | no |
+| <a name="input_webhook_oci_image"></a> [webhook\_oci\_image](#input\_webhook\_oci\_image) | The webhook OCI image to deploy. This needs to be the full path withouth the image tag. This is only used if use\_remote\_repository is set to false | `string` | `""` | no |
 | <a name="input_webhook_secret"></a> [webhook\_secret](#input\_webhook\_secret) | The secret to use | `string` | n/a | yes |
-| <a name="input_webhook_version"></a> [webhook\_version](#input\_webhook\_version) | The version of the webhook to deploy | `string` | `"latest"` | no |
+| <a name="input_webhook_version"></a> [webhook\_version](#input\_webhook\_version) | The version of the webhook to deploy. If not set the module version will be used | `string` | `""` | no |
 
 ## Outputs
 

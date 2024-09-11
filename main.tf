@@ -1,9 +1,18 @@
 locals {
+  module_version = "v0.2.0"
+
   runner_labels = sort(distinct(concat(["self-hosted", "linux", "x64"], var.runner_extra_labels)))
+  required_services = concat(
+    ["compute.googleapis.com", "run.googleapis.com", "cloudtasks.googleapis.com", "secretmanager.googleapis.com", "cloudscheduler.googleapis.com"],
+    var.use_remote_repository ? ["artifactregistry.googleapis.com"] : []
+  )
+
+  effective_control_plane_version = var.control_plane_version == "" ? local.module_version : var.control_plane_version
+  effective_webhook_version       = var.webhook_version == "" ? local.module_version : var.webhook_version
 }
 
 resource "google_project_service" "required_services" {
-  for_each = toset(["compute.googleapis.com", "run.googleapis.com", "cloudtasks.googleapis.com", "secretmanager.googleapis.com", "cloudscheduler.googleapis.com"])
+  for_each = toset(local.required_services)
   project  = var.project_id
   service  = each.key
 }
@@ -62,6 +71,16 @@ resource "google_secret_manager_secret_version" "github_auth_secret" {
   secret_data = var.github_app_private_key_base64
 }
 
+module "artifact_registry" {
+  count  = var.use_remote_repository ? 1 : 0
+  source = "./modules/artifact_registry"
+
+  project_id            = var.project_id
+  region                = var.region
+  remote_repository_url = var.remote_repository_url
+  depends_on            = [google_project_service.required_services]
+}
+
 module "runner_template" {
   source     = "./modules/runner_template"
   project_id = var.project_id
@@ -116,8 +135,8 @@ module "control_plane" {
   private_key_secret_id      = google_secret_manager_secret.github_auth_secret.id
   private_key_secret_version = google_secret_manager_secret_version.github_auth_secret.version
 
-  image     = var.control_plane_oci_image
-  image_tag = var.control_plane_version
+  image     = var.use_remote_repository ? "${module.artifact_registry[0].image_cache_url}/${var.remote_control_plane_image_name}" : var.control_plane_oci_image
+  image_tag = local.effective_control_plane_version
 
   shutdown_schedule          = var.shutdown_schedule
   shutdown_schedule_timezone = var.shutdown_schedule_timezone
@@ -139,8 +158,8 @@ module "webhook" {
   invoker_service_account_id = module.control_plane.invoker_service_account_id
   control_plane_url          = module.control_plane.service_url
 
-  image           = var.webhook_oci_image
-  image_tag       = var.webhook_version
+  image           = var.use_remote_repository ? "${module.artifact_registry[0].image_cache_url}/${var.remote_webhook_image_name}" : var.webhook_oci_image
+  image_tag       = local.effective_webhook_version
   task_queue_path = google_cloud_tasks_queue.github_events.id
 
   webhook_secret_id      = google_secret_manager_secret.webhook_secret.id
