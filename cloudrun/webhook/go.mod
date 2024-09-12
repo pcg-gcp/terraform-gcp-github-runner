@@ -3,14 +3,14 @@ module github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/webhook
 go 1.23
 
 require (
-	cloud.google.com/go/cloudtasks v1.13.0
+	cloud.google.com/go/cloudtasks v1.13.1
 	github.com/google/go-github/v64 v64.0.0
 	github.com/sethvargo/go-envconfig v1.1.0
 	google.golang.org/protobuf v1.34.2
 )
 
 require (
-	cloud.google.com/go/auth v0.9.1 // indirect
+	cloud.google.com/go/auth v0.9.3 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	cloud.google.com/go/iam v1.2.0 // indirect
@@ -35,9 +35,9 @@ require (
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	google.golang.org/api v0.194.0 // indirect
-	google.golang.org/genproto v0.0.0-20240826202546-f6391c0de4c7 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7 // indirect
-	google.golang.org/grpc v1.65.0 // indirect
+	google.golang.org/api v0.196.0 // indirect
+	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240903143218-8af14fe29dc1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
+	google.golang.org/grpc v1.66.0 // indirect
 )
