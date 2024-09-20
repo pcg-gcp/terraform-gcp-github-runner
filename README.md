@@ -41,7 +41,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_allowed_zones"></a> [allowed\_zones](#input\_allowed\_zones) | The zones to deploy the runner instances into.<br>If not set the runner will be deployed into any zone in the region.<br>Also see use\_strict\_zone\_order | `list(string)` | `[]` | no |
+| <a name="input_allowed_zones"></a> [allowed\_zones](#input\_allowed\_zones) | The zones to deploy the runner instances into.<br/>If not set the runner will be deployed into any zone in the region.<br/>Also see use\_strict\_zone\_order | `list(string)` | `[]` | no |
 | <a name="input_control_plane_oci_image"></a> [control\_plane\_oci\_image](#input\_control\_plane\_oci\_image) | The control plane OCI image to deploy. This needs to be the full path without the image tag. This is only used if use\_remote\_repository is set to false | `string` | `""` | no |
 | <a name="input_control_plane_version"></a> [control\_plane\_version](#input\_control\_plane\_version) | The version of the control plane to deploy. If not set the module version will be used | `string` | `""` | no |
 | <a name="input_enable_debug"></a> [enable\_debug](#input\_enable\_debug) | Whether to enable debug mode | `bool` | `false` | no |
@@ -76,7 +76,7 @@
 | <a name="input_use_jit_config"></a> [use\_jit\_config](#input\_use\_jit\_config) | Whether to use JIT config | `bool` | `false` | no |
 | <a name="input_use_org_runners"></a> [use\_org\_runners](#input\_use\_org\_runners) | Whether to use github organization runners | `bool` | `false` | no |
 | <a name="input_use_remote_repository"></a> [use\_remote\_repository](#input\_use\_remote\_repository) | Whether to use a remote repository for caching images | `bool` | `true` | no |
-| <a name="input_use_strict_zone_order"></a> [use\_strict\_zone\_order](#input\_use\_strict\_zone\_order) | If this is set to true and allowed\_zones is set the runner will always be deployed in the first available zone in the list unless it is unavailable.<br>If allowed\_zones is not set the first zone returned by the API will be used.<br>Otherwise the runner will be deployed in a random zone either from the allowed\_zones list or from the API. | `bool` | `false` | no |
+| <a name="input_use_strict_zone_order"></a> [use\_strict\_zone\_order](#input\_use\_strict\_zone\_order) | If this is set to true and allowed\_zones is set the runner will always be deployed in the first available zone in the list unless it is unavailable.<br/>If allowed\_zones is not set the first zone returned by the API will be used.<br/>Otherwise the runner will be deployed in a random zone either from the allowed\_zones list or from the API. | `bool` | `false` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The VPC to deploy runner instances into | `string` | n/a | yes |
 | <a name="input_webhook_oci_image"></a> [webhook\_oci\_image](#input\_webhook\_oci\_image) | The webhook OCI image to deploy. This needs to be the full path withouth the image tag. This is only used if use\_remote\_repository is set to false | `string` | `""` | no |
 | <a name="input_webhook_secret"></a> [webhook\_secret](#input\_webhook\_secret) | The secret to use | `string` | n/a | yes |
