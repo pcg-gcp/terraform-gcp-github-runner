@@ -33,7 +33,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_allowed_zones"></a> [allowed\_zones](#input\_allowed\_zones) | The zones to deploy the runner instances into.<br>If not set the runner will be deployed into any zone in the region.<br>Also see use\_strict\_zone\_order | `list(string)` | n/a | yes |
+| <a name="input_allowed_zones"></a> [allowed\_zones](#input\_allowed\_zones) | The zones to deploy the runner instances into.<br/>If not set the runner will be deployed into any zone in the region.<br/>Also see use\_strict\_zone\_order | `list(string)` | n/a | yes |
 | <a name="input_enable_debug"></a> [enable\_debug](#input\_enable\_debug) | Whether to enable debug mode | `bool` | n/a | yes |
 | <a name="input_ephemeral"></a> [ephemeral](#input\_ephemeral) | Whether to use ephemeral runners | `bool` | n/a | yes |
 | <a name="input_github_app_id"></a> [github\_app\_id](#input\_github\_app\_id) | The GitHub App ID | `string` | n/a | yes |
@@ -54,7 +54,7 @@ No modules.
 | <a name="input_shutdown_schedule_timezone"></a> [shutdown\_schedule\_timezone](#input\_shutdown\_schedule\_timezone) | The timezone of the shutdown schedule | `string` | n/a | yes |
 | <a name="input_use_jit_config"></a> [use\_jit\_config](#input\_use\_jit\_config) | Whether to use JIT config | `bool` | `false` | no |
 | <a name="input_use_org_runners"></a> [use\_org\_runners](#input\_use\_org\_runners) | Whether to use github organization runners | `bool` | `false` | no |
-| <a name="input_use_strict_zone_order"></a> [use\_strict\_zone\_order](#input\_use\_strict\_zone\_order) | If this is set to true and allowed\_zones is set the runner will always be deployed in the first available zone in the list unless it is unavailable.<br>If allowed\_zones is not set the first zone returned by the API will be used.<br>Otherwise the runner will be deployed in a random zone either from the allowed\_zones list or from the API. | `bool` | n/a | yes |
+| <a name="input_use_strict_zone_order"></a> [use\_strict\_zone\_order](#input\_use\_strict\_zone\_order) | If this is set to true and allowed\_zones is set the runner will always be deployed in the first available zone in the list unless it is unavailable.<br/>If allowed\_zones is not set the first zone returned by the API will be used.<br/>Otherwise the runner will be deployed in a random zone either from the allowed\_zones list or from the API. | `bool` | n/a | yes |
 
 ## Outputs
 
