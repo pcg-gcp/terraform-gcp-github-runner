@@ -7,13 +7,13 @@ require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
 	github.com/google/go-github/v65 v65.0.0
 	github.com/sethvargo/go-envconfig v1.1.0
-	google.golang.org/api v0.198.0
+	google.golang.org/api v0.199.0
 )
 
 require (
-	cloud.google.com/go/auth v0.9.4 // indirect
+	cloud.google.com/go/auth v0.9.5 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
-	cloud.google.com/go/compute/metadata v0.5.1 // indirect
+	cloud.google.com/go/compute/metadata v0.5.2 // indirect
 	cloud.google.com/go/iam v1.2.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
