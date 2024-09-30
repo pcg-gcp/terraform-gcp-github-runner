@@ -201,6 +201,19 @@ func (c *Client) getInstallationID(runnerType, owner, repo string, ctx context.C
 }
 
 func (c *Client) GetJobStatus(jobID, installationID int64, owner, repo string, ctx context.Context) (string, error) {
+	var err error
+	if installationID == 0 {
+		if c.cfg.UseOrgRunners {
+			installationID, err = c.getInstallationID("org", owner, repo, ctx)
+		} else {
+			installationID, err = c.getInstallationID("repo", owner, repo, ctx)
+		}
+		if err != nil {
+			slog.Error("Failed to get installation ID", slog.String("error", err.Error()))
+			return "", err
+		}
+	}
+
 	client, err := c.getClient(installationID)
 	if err != nil {
 		err = fmt.Errorf("failed to create client: %w", err)
