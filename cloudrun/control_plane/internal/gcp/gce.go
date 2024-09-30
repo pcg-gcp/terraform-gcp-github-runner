@@ -28,7 +28,7 @@ func (c *Client) CreateInstance(instanceName, repository, owner, githubRunnerCon
 		return err
 	}
 	serviceAccount := template.Properties.ServiceAccounts[0].Email
-	err = addSecret(c.cfg.ProjectID, secretName, githubRunnerConfig, serviceAccount, ctx)
+	err = c.addSecret(secretName, githubRunnerConfig, serviceAccount, ctx)
 	if err != nil {
 		err = fmt.Errorf("error creating secret: %w", err)
 		slog.Error(err.Error())
@@ -88,7 +88,7 @@ func (c *Client) GetInstances() (*compute.InstanceAggregatedList, error) {
 }
 
 func (c *Client) DeleteInstance(instanceName, zone string, ctx context.Context) error {
-	err := deleteSecret(c.cfg.ProjectID, fmt.Sprintf("%s-config", instanceName), ctx)
+	err := c.deleteSecret(fmt.Sprintf("%s-config", instanceName), ctx)
 	if err != nil {
 		slog.Warn(fmt.Sprintf("Error deleting secret for instance %s: %s", instanceName, err))
 	}
