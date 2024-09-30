@@ -1,5 +1,5 @@
 locals {
-  module_version = "v0.4.3"
+  module_version = "v0.4.4"
 
   runner_labels = sort(distinct(concat(["self-hosted", "linux", "x64"], var.runner_extra_labels)))
   required_services = concat(

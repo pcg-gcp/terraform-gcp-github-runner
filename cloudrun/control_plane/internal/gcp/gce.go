@@ -79,6 +79,14 @@ func (c *Client) CreateInstance(instanceName, repository, owner, githubRunnerCon
 			return err
 		}
 	}
+	if op.Error != nil {
+		errorMessages := make([]string, 0, len(op.Error.Errors))
+		for _, e := range op.Error.Errors {
+			errorMessages = append(errorMessages, e.Message)
+		}
+		err = fmt.Errorf("error creating instance: %s", strings.Join(errorMessages, ";"))
+		return err
+	}
 	slog.Info(fmt.Sprintf("Instance %s created", instanceName))
 	return nil
 }
