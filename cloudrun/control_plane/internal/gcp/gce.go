@@ -11,7 +11,7 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
-func (c *Client) CreateInstance(instanceName, repository, owner, githubRunnerConfig, useJitConfigStr string, ctx context.Context) error {
+func (c *Client) CreateInstance(instanceName, repository, owner, githubRunnerConfig, useJitConfigStr, runnerType string, ctx context.Context) error {
 	slog.Debug(fmt.Sprintf("Getting instance template %s", c.cfg.InstanceTemplateName))
 	template, err := c.computeService.InstanceTemplates.Get(c.cfg.ProjectID, c.cfg.InstanceTemplateName).Do()
 	if err != nil {
@@ -57,9 +57,9 @@ func (c *Client) CreateInstance(instanceName, repository, owner, githubRunnerCon
 		},
 		Labels: map[string]string{
 			"ghr-managed": "true",
-			"ghr-type":    "repo",
-			"ghr-repo":    repository,
-			"ghr-owner":   owner,
+			"ghr-type":    runnerType,
+			"ghr-repo":    strings.ToLower(repository),
+			"ghr-owner":   strings.ToLower(owner),
 		},
 	}
 	createInstanceRequest := c.computeService.Instances.Insert(c.cfg.ProjectID, zone, instance)

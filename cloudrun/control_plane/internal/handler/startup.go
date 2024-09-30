@@ -51,8 +51,12 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+	runnerTypeString := "repo"
+	if h.cfg.UseOrgRunners {
+		runnerTypeString = "org"
+	}
 
-	err = h.gcpClient.CreateInstance(instanceName, m.Repository, m.Owner, githubRunnerConfig, useJitConfigStr, ctx)
+	err = h.gcpClient.CreateInstance(instanceName, m.Repository, m.Owner, githubRunnerConfig, useJitConfigStr, runnerTypeString, ctx)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating instance: %s", err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
