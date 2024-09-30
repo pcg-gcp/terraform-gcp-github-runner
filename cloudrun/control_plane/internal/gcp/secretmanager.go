@@ -4,43 +4,36 @@ import (
 	"context"
 	"fmt"
 
-	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 )
 
-func addSecret(projectID, name, value, serviceAccount string, ctx context.Context) error {
-	client, err := secretmanager.NewClient(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to setup client: %v", err)
-	}
-	defer client.Close()
-
+func (c *Client) addSecret(name, value, serviceAccount string, ctx context.Context) error {
 	replication := &secretmanagerpb.Replication{}
 	if true {
-		replication.Replication = &secretmanagerpb.Replication_Automatic_{
-			Automatic: &secretmanagerpb.Replication_Automatic{},
-		}
-	} else {
 		replication.Replication = &secretmanagerpb.Replication_UserManaged_{
 			UserManaged: &secretmanagerpb.Replication_UserManaged{
 				Replicas: []*secretmanagerpb.Replication_UserManaged_Replica{
 					{
-						Location: "us-central1",
+						Location: c.cfg.Region,
 					},
 				},
 			},
 		}
+	} else {
+		replication.Replication = &secretmanagerpb.Replication_Automatic_{
+			Automatic: &secretmanagerpb.Replication_Automatic{},
+		}
 	}
 
 	createSecretReq := &secretmanagerpb.CreateSecretRequest{
-		Parent:   fmt.Sprintf("projects/%s", projectID),
+		Parent:   fmt.Sprintf("projects/%s", c.cfg.ProjectID),
 		SecretId: name,
 		Secret: &secretmanagerpb.Secret{
 			Replication: replication,
 		},
 	}
 
-	secret, err := client.CreateSecret(ctx, createSecretReq)
+	secret, err := c.secretManagerClient.CreateSecret(ctx, createSecretReq)
 	if err != nil {
 		return fmt.Errorf("failed to create secret: %v", err)
 	}
@@ -53,12 +46,12 @@ func addSecret(projectID, name, value, serviceAccount string, ctx context.Contex
 		},
 	}
 
-	_, err = client.AddSecretVersion(ctx, addSecretVersionReq)
+	_, err = c.secretManagerClient.AddSecretVersion(ctx, addSecretVersionReq)
 	if err != nil {
 		return fmt.Errorf("failed to add secret version: %v", err)
 	}
 
-	handle := client.IAM(secret.Name)
+	handle := c.secretManagerClient.IAM(secret.Name)
 	policy, err := handle.Policy(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get policy: %w", err)
@@ -72,14 +65,9 @@ func addSecret(projectID, name, value, serviceAccount string, ctx context.Contex
 	return nil
 }
 
-func deleteSecret(projectID, name string, ctx context.Context) error {
-	client, err := secretmanager.NewClient(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to setup client: %v", err)
-	}
-	defer client.Close()
-	secretName := fmt.Sprintf("projects/%s/secrets/%s", projectID, name)
-	err = client.DeleteSecret(ctx, &secretmanagerpb.DeleteSecretRequest{Name: secretName})
+func (c *Client) deleteSecret(name string, ctx context.Context) error {
+	secretName := fmt.Sprintf("projects/%s/secrets/%s", c.cfg.ProjectID, name)
+	err := c.secretManagerClient.DeleteSecret(ctx, &secretmanagerpb.DeleteSecretRequest{Name: secretName})
 	if err != nil {
 		return fmt.Errorf("failed to delete secret: %v", err)
 	}
