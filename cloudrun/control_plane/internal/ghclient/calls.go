@@ -75,6 +75,19 @@ func (c *Client) generateStandardConfig(owner, repository string, useOrgRunners 
 }
 
 func (c *Client) GenerateRunnerConfig(installationID int64, owner, repository, instanceName string, useOrgRunners bool, ctx context.Context) (string, string, error) {
+	var err error
+	if installationID == 0 {
+		if c.cfg.UseOrgRunners {
+			installationID, err = c.getInstallationID("org", owner, repository, ctx)
+		} else {
+			installationID, err = c.getInstallationID("repo", owner, repository, ctx)
+		}
+		if err != nil {
+			slog.Error("Failed to get installation ID", slog.String("error", err.Error()))
+			return "", "", err
+		}
+	}
+
 	client, err := c.getClient(installationID)
 	if err != nil {
 		return "", "", err
@@ -107,22 +120,12 @@ func (c *Client) RemoveRunnerForInstance(instance *compute.Instance, ctx context
 	owner := instance.Labels["ghr-owner"]
 	runnerType := instance.Labels["ghr-type"]
 
-	switch runnerType {
-	case "repo":
-		installation, _, err := c.appsClient.Apps.FindRepositoryInstallation(ctx, owner, repo)
-		if err != nil {
-			err = fmt.Errorf("failed to find installation: %w", err)
-			return false, err
-		}
-		installationId = installation.GetID()
-	case "org":
-		installation, _, err := c.appsClient.Apps.FindOrganizationInstallation(ctx, owner)
-		if err != nil {
-			err = fmt.Errorf("failed to find installation: %w", err)
-			return false, err
-		}
-		installationId = installation.GetID()
+	installationId, err := c.getInstallationID(runnerType, owner, repo, ctx)
+	if err != nil {
+		err = fmt.Errorf("failed to get installation id: %w", err)
+		return false, err
 	}
+
 	client, err := c.getClient(installationId)
 	if err != nil {
 		err = fmt.Errorf("failed to create client: %w", err)
@@ -175,6 +178,26 @@ func (c *Client) RemoveRunnerForInstance(instance *compute.Instance, ctx context
 		}
 	}
 	return true, nil
+}
+
+func (c *Client) getInstallationID(runnerType, owner, repo string, ctx context.Context) (int64, error) {
+	switch runnerType {
+	case "repo":
+		installation, _, err := c.appsClient.Apps.FindRepositoryInstallation(ctx, owner, repo)
+		if err != nil {
+			err = fmt.Errorf("failed to find installation: %w", err)
+			return 0, err
+		}
+		return installation.GetID(), nil
+	case "org":
+		installation, _, err := c.appsClient.Apps.FindOrganizationInstallation(ctx, owner)
+		if err != nil {
+			err = fmt.Errorf("failed to find installation: %w", err)
+			return 0, err
+		}
+		return installation.GetID(), nil
+	}
+	return 0, fmt.Errorf("invalid runner type: %s", runnerType)
 }
 
 func (c *Client) GetJobStatus(jobID, installationID int64, owner, repo string, ctx context.Context) (string, error) {
