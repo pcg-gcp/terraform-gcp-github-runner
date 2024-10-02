@@ -1,6 +1,4 @@
 locals {
-  module_version = "v0.4.4"
-
   runner_labels = sort(distinct(concat(["self-hosted", "linux", "x64"], var.runner_extra_labels)))
   required_services = concat(
     ["compute.googleapis.com", "run.googleapis.com", "cloudtasks.googleapis.com", "secretmanager.googleapis.com", "cloudscheduler.googleapis.com"],

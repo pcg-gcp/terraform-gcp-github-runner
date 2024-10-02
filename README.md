@@ -1,4 +1,12 @@
 # terraform-gcp-github-runner
+
+This repository uses [Conventional Commit messages](https://www.conventionalcommits.org/) to automatically generate a changelog and versioning. The following commit types are supported:
+- fix: A bug fix (PATCH)
+- feat: A new feature (MINOR)
+- fix!, feat!, refactor! etc.: A breaking change (MAJOR)
+
+Please make sure to follow the commit message convention when creating pull requests.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

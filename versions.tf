@@ -1,3 +1,7 @@
+locals {
+  module_version = "v0.4.4"
+}
+
 terraform {
   required_version = "~> 1.8"
   required_providers {
