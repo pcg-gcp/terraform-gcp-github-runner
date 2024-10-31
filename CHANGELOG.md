@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.1...v0.5.2) (2024-10-31)
+
+
+### Bug Fixes
+
+* **docker:** move base image to distroless ([da70062](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/da70062f93b44eb0739c57295d39b88acfc43734))
+
 ## [0.5.1](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.0...v0.5.1) (2024-10-14)
 
 
