@@ -5,10 +5,6 @@ RUN go mod download
 COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./goapp ./main.go
 
-
-FROM alpine:3
-RUN addgroup -S app && adduser -S app -G app
-USER app
-WORKDIR /home/app
-COPY --from=build /app/goapp ./
-ENTRYPOINT ["./goapp"]
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /app/goapp /
+ENTRYPOINT ["/goapp"]
