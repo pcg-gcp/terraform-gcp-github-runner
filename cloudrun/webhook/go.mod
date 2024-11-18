@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/cloudtasks v1.13.2
 	github.com/google/go-github/v66 v66.0.0
 	github.com/sethvargo/go-envconfig v1.1.0
-	google.golang.org/protobuf v1.35.1
+	google.golang.org/protobuf v1.35.2
 )
 
 require (
