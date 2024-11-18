@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.3](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.2...v0.5.3) (2024-11-18)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/bradleyfalzon/ghinstallation/v2 to v2.12.0 ([1562ca9](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/1562ca9a6a50f6f407d1703bf3426f823c4f22e8))
+* **deps:** update module google.golang.org/api to v0.206.0 ([8089b83](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/8089b832f6564d1eb25a63e6e509cad9ca9ffcf8))
+* **deps:** update module google.golang.org/protobuf to v1.35.2 ([4233b4d](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/4233b4d49666bb7e3b1378551511882e4126967c))
+
 ## [0.5.2](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.1...v0.5.2) (2024-10-31)
 
 
