@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.7](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.6...v0.5.7) (2024-11-25)
+
+
+### Bug Fixes
+
+* **deps:** update module google.golang.org/api to v0.209.0 ([a2c4089](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/a2c4089335db4b72c95e3dcaad96d4154c94b1ec))
+
 ## [0.5.6](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.5...v0.5.6) (2024-11-18)
 
 
