@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.8](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.6...v0.5.8) (2024-12-17)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/google/go-github/v66 to v67 ([7f81a93](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/7f81a93a30cda64d17bac08ece580a316cf135bc))
+
+
+### Miscellaneous Chores
+
+* release 0.5.8 ([5ffa889](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/5ffa889a7b1f687b24fabf23b026de2abbb1baa6))
+
 ## [0.5.6](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.5...v0.5.6) (2024-11-18)
 
 
