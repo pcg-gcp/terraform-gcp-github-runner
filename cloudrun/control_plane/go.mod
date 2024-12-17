@@ -5,7 +5,6 @@ go 1.23
 require (
 	cloud.google.com/go/secretmanager v1.14.2
 	github.com/bradleyfalzon/ghinstallation/v2 v2.12.0
-	github.com/google/go-github/v66 v66.0.0
 	github.com/google/go-github/v67 v67.0.0
 	github.com/sethvargo/go-envconfig v1.1.0
 	google.golang.org/api v0.212.0
@@ -21,6 +20,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
+	github.com/google/go-github/v66 v66.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/s2a-go v0.1.8 // indirect
 	github.com/google/uuid v1.6.0 // indirect
