@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/secretmanager v1.14.2
 	github.com/bradleyfalzon/ghinstallation/v2 v2.12.0
 	github.com/google/go-github/v66 v66.0.0
+	github.com/google/go-github/v67 v67.0.0
 	github.com/sethvargo/go-envconfig v1.1.0
 	google.golang.org/api v0.212.0
 )
