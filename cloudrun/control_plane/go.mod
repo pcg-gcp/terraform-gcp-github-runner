@@ -3,12 +3,12 @@ module github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane
 go 1.23
 
 require (
-	cloud.google.com/go/secretmanager v1.14.2
+	cloud.google.com/go/secretmanager v1.14.3
 	github.com/bradleyfalzon/ghinstallation/v2 v2.13.0
 	github.com/google/go-github/v67 v67.0.0
 	github.com/google/go-github/v68 v68.0.0
 	github.com/sethvargo/go-envconfig v1.1.0
-	google.golang.org/api v0.212.0
+	google.golang.org/api v0.214.0
 )
 
 require (
@@ -34,7 +34,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.33.0 // indirect
 	go.opentelemetry.io/otel/trace v1.33.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/net v0.32.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
