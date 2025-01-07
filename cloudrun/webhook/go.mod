@@ -4,7 +4,7 @@ go 1.23
 
 require (
 	cloud.google.com/go/cloudtasks v1.13.3
-	github.com/google/go-github/v67 v67.0.0
+	github.com/google/go-github/v68 v68.0.0
 	github.com/google/go-github/v68 v68.0.0
 	github.com/sethvargo/go-envconfig v1.1.0
 	google.golang.org/protobuf v1.36.0
