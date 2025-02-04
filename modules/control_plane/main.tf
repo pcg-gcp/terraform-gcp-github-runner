@@ -8,11 +8,6 @@ data "google_service_account" "invoker" {
   project      = var.project_id
 }
 
-data "google_service_account" "invoker" {
-  account_id = "ghr-cp-invoker-sa"
-  project      = var.project_id
-}
-
 resource "google_cloud_run_v2_service" "control_plane" {
   project = var.project_id
 
