@@ -1,4 +1,4 @@
-data "google_service_account" "runner" {
+data "google_service_account" "webhook" {
   account_id = "ghr-webhook-sa"
   project      = var.project_id
 }
