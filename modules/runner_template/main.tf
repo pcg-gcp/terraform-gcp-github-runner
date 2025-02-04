@@ -12,17 +12,9 @@ locals {
   runner_version         = coalesce(var.runner_version, trimprefix(jsondecode(data.http.github_runner_release_json.response_body).tag_name, "v"))
 }
 
-resource "google_service_account" "runner" {
+data "google_service_account" "runner" {
+  account_id = "ghr-runner-sa"
   project      = var.project_id
-  account_id   = "ghr-runner"
-  display_name = "Runner Service Account"
-}
-
-resource "google_project_iam_member" "runner" {
-  for_each = toset(["logging.logWriter", "monitoring.metricWriter"])
-  project  = var.project_id
-  role     = "roles/${each.value}"
-  member   = "serviceAccount:${google_service_account.runner.email}"
 }
 
 resource "random_string" "bucket_suffix" {
@@ -53,12 +45,6 @@ resource "google_storage_bucket_object" "startup_script" {
     runner_download_url = "https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz"
   })
   bucket = google_storage_bucket.runner_bucket.name
-}
-
-resource "google_storage_bucket_iam_member" "runner" {
-  bucket = google_storage_bucket.runner_bucket.name
-  role   = "roles/storage.objectViewer"
-  member = "serviceAccount:${google_service_account.runner.email}"
 }
 
 locals {
@@ -118,7 +104,7 @@ resource "google_compute_instance_template" "runner" {
   }
 
   service_account {
-    email  = google_service_account.runner.email
+    email  = data.google_service_account.runner.email
     scopes = ["cloud-platform"]
   }
 }

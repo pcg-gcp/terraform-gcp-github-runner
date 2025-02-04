@@ -3,9 +3,9 @@ output "service_url" {
 }
 
 output "invoker_service_account" {
-  value = google_service_account.invoker.email
+  value = data.google_service_account.invoker.email
 }
 
 output "invoker_service_account_id" {
-  value = google_service_account.invoker.id
+  value = data.google_service_account.invoker.id
 }

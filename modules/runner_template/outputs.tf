@@ -3,5 +3,5 @@ output "instance_template_name" {
 }
 
 output "runner_service_account_id" {
-  value = google_service_account.runner.id
+  value = data.google_service_account.runner.id
 }
