@@ -1,4 +1,4 @@
-data "google_service_account" "control_planer" {
+data "google_service_account" "control_plane" {
   account_id = "ghr-control-plane-sa"
   project      = var.project_id
 }
