@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.2](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.6.1...v0.6.2) (2025-02-20)
+
+
+### Bug Fixes
+
+* **terraform:** Add missing web_account_id ([db5db88](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/db5db88514edcb4ba904d85a9b811d9070c03462))
+* **terraform:** fix wrong email reference ([cc8c3a8](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/cc8c3a89cc80c7ee2bbf315b397ae336c3071876))
+
 ## [0.6.1](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.6.0...v0.6.1) (2025-02-20)
 
 
