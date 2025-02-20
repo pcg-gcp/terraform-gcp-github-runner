@@ -38,6 +38,7 @@ variable "disable_service_account_management" {
 variable "runner_account_id" {
   type        = string
   description = "Account id of the runner service account only used if service account management is disabled."
+  default     = "ghr-runner"
 }
 
 variable "control_plane_account_id" {
