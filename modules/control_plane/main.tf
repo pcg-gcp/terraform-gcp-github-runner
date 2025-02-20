@@ -166,7 +166,7 @@ resource "google_cloud_scheduler_job" "shutdown" {
     uri         = "${google_cloud_run_v2_service.control_plane.uri}/shutdown"
 
     oidc_token {
-      service_account_email = google_service_account.invoker.email
+      service_account_email = local.invoker_email
     }
   }
 }
