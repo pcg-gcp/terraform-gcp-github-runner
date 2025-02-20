@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.6.0...v0.6.1) (2025-02-20)
+
+
+### Bug Fixes
+
+* **terraform:** Add missing default for runner_account_id ([7851eaf](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/7851eaf15d2a6935867639fa2adaaa6041dd4b96))
+
 ## [0.6.0](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.9...v0.6.0) (2025-02-20)
 
 
