@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.6.0](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.9...v0.6.0) (2025-02-20)
+
+
+### Features
+
+* **tf:** Allow the user to disable service account management ([b46effe](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/b46effeb6348d5d5d6c3bf096d6d41b9b3378174))
+
+
+### Bug Fixes
+
+* **deps:** Fix update to go-github v69 ([6091db9](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/6091db9173e798bb1faefe1dc44af69c8abcb86c))
+* **deps:** Fix webhook upgrade to go-github v69 ([8c0ed75](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/8c0ed754946bdfcfb8ecf734bdb8f7ca0e2fba93))
+* **deps:** update module cloud.google.com/go/secretmanager to v1.14.5 ([6a7b2fd](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/6a7b2fd37d6bf1c6ea1e0ce926adac953047adf9))
+* **deps:** update module github.com/google/go-github/v68 to v69 ([3e715dd](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/3e715dd847018a55fdee24c66007cea02b5ea7df))
+* **deps:** update module github.com/google/go-github/v68 to v69 ([f61b871](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/f61b8713748af00b529b2060e9e53d967f7a420c))
+* **deps:** update module github.com/sethvargo/go-envconfig to v1.1.1 ([418deca](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/418decaa8e058f3a1f80224908eac77fa01f97a3))
+* **deps:** update module google.golang.org/api to v0.222.0 ([33e3e1a](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/33e3e1adb4fef610cf3b0daf29f003ea3bbbc739))
+* **deps:** update module google.golang.org/protobuf to v1.36.5 ([26c2246](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/26c2246838de61b024738cd30e829183d762c775))
+
 ## [0.5.9](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.5.8...v0.5.9) (2025-01-07)
 
 
