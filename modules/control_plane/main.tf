@@ -1,32 +1,58 @@
 resource "google_service_account" "control_plane" {
+  count = var.disable_service_account_management ? 0 : 1
+
   project      = var.project_id
   account_id   = "ghr-control-plane"
   display_name = "Github Runner CP SA"
 }
 
+data "google_service_account" "control_plane" {
+  count = var.disable_service_account_management ? 1 : 0
+
+  project    = var.project_id
+  account_id = var.control_plane_account_id
+}
+
 resource "google_service_account" "invoker" {
+  count = var.disable_service_account_management ? 0 : 1
+
   project      = var.project_id
   account_id   = "ghr-cp-invoker"
   display_name = "Invoker Service Account"
 }
 
+data "google_service_account" "invoker" {
+  count = var.disable_service_account_management ? 1 : 0
+
+  project    = var.project_id
+  account_id = var.invoker_account_id
+}
+
+locals {
+  control_plane_email = var.disable_service_account_management ? data.google_service_account.control_plane[0].email : google_service_account.control_plane[0].email
+  invoker_email       = var.disable_service_account_management ? data.google_service_account.invoker[0].email : google_service_account.invoker[0].email
+}
+
 resource "google_project_iam_member" "control_plane" {
-  for_each = toset(["compute.admin", "secretmanager.admin"])
-  project  = var.project_id
-  role     = "roles/${each.value}"
-  member   = "serviceAccount:${google_service_account.control_plane.email}"
+  for_each = toset(var.disable_service_account_management ? [] : ["compute.admin", "secretmanager.admin"])
+
+  project = var.project_id
+  role    = "roles/${each.value}"
+  member  = "serviceAccount:${local.control_plane_email}"
 }
 
 resource "google_secret_manager_secret_iam_member" "control_plane" {
   secret_id = var.private_key_secret_id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.control_plane.email}"
+  member    = "serviceAccount:${local.control_plane_email}"
 }
 
 resource "google_service_account_iam_member" "runner_user" {
+  count = var.disable_service_account_management ? 0 : 1
+
   service_account_id = var.runner_service_account_id
   role               = "roles/iam.serviceAccountUser"
-  member             = "serviceAccount:${google_service_account.control_plane.email}"
+  member             = "serviceAccount:${local.control_plane_email}"
 }
 
 resource "google_cloud_run_v2_service" "control_plane" {
@@ -37,7 +63,7 @@ resource "google_cloud_run_v2_service" "control_plane" {
   ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
-    service_account = google_service_account.control_plane.email
+    service_account = local.control_plane_email
     scaling {
       max_instance_count = var.max_instance_count
     }
@@ -121,7 +147,7 @@ resource "google_cloud_run_v2_service_iam_binding" "control_plane" {
   location = google_cloud_run_v2_service.control_plane.location
   name     = google_cloud_run_v2_service.control_plane.name
   role     = "roles/run.invoker"
-  members  = ["serviceAccount:${google_service_account.invoker.email}"]
+  members  = ["serviceAccount:${local.invoker_email}"]
 }
 
 resource "google_cloud_scheduler_job" "shutdown" {

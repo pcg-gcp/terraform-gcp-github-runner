@@ -13,16 +13,29 @@ locals {
 }
 
 resource "google_service_account" "runner" {
+  count = var.disable_service_account_management ? 0 : 1
+
   project      = var.project_id
   account_id   = "ghr-runner"
   display_name = "Runner Service Account"
 }
 
+data "google_service_account" "runner" {
+  count = var.disable_service_account_management ? 1 : 0
+
+  project    = var.project_id
+  account_id = var.runner_account_id
+}
+
+locals {
+  runner_email = var.disable_service_account_management ? data.google_service_account.runner[0].email : google_service_account.runner[0].email
+}
+
 resource "google_project_iam_member" "runner" {
-  for_each = toset(["logging.logWriter", "monitoring.metricWriter"])
+  for_each = toset(var.disable_service_account_management ? [] : ["logging.logWriter", "monitoring.metricWriter"])
   project  = var.project_id
   role     = "roles/${each.value}"
-  member   = "serviceAccount:${google_service_account.runner.email}"
+  member   = "serviceAccount:${local.runner_email}"
 }
 
 resource "random_string" "bucket_suffix" {
@@ -58,7 +71,7 @@ resource "google_storage_bucket_object" "startup_script" {
 resource "google_storage_bucket_iam_member" "runner" {
   bucket = google_storage_bucket.runner_bucket.name
   role   = "roles/storage.objectViewer"
-  member = "serviceAccount:${google_service_account.runner.email}"
+  member = "serviceAccount:${local.runner_email}"
 }
 
 locals {
@@ -118,7 +131,7 @@ resource "google_compute_instance_template" "runner" {
   }
 
   service_account {
-    email  = google_service_account.runner.email
+    email  = local.runner_email
     scopes = ["cloud-platform"]
   }
 }

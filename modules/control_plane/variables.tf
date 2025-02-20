@@ -26,6 +26,21 @@ variable "use_strict_zone_order" {
   EOT
 }
 
+variable "disable_service_account_management" {
+  type        = bool
+  description = "Whether the used service accounts should be create by this module."
+}
+
+variable "control_plane_account_id" {
+  type        = string
+  description = "Account id of the control plane service account only used if service account management is disabled."
+}
+
+variable "invoker_account_id" {
+  type        = string
+  description = "Account id of the invoker service account only used if service account management is disabled."
+}
+
 variable "enable_debug" {
   type        = bool
   description = "Whether to enable debug mode"

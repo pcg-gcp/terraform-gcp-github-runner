@@ -9,6 +9,16 @@ variable "region" {
   default     = "europe-west1"
 }
 
+variable "disable_service_account_management" {
+  type        = bool
+  description = "Whether the used service accounts should be create by this module."
+}
+
+variable "webhook_account_id" {
+  type        = string
+  description = "Account id of the webhook service account only used if service account management is disabled."
+}
+
 variable "image" {
   type        = string
   description = "The image to deploy"

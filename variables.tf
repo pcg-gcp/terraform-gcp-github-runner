@@ -29,6 +29,35 @@ variable "use_strict_zone_order" {
   default     = false
 }
 
+variable "disable_service_account_management" {
+  type        = bool
+  description = "Whether the used service accounts should be create by this module."
+  default     = false
+}
+
+variable "runner_account_id" {
+  type        = string
+  description = "Account id of the runner service account only used if service account management is disabled."
+}
+
+variable "control_plane_account_id" {
+  type        = string
+  description = "Account id of the control plane service account only used if service account management is disabled."
+  default     = "ghr-control-plane"
+}
+
+variable "invoker_account_id" {
+  type        = string
+  description = "Account id of the invoker service account only used if service account management is disabled."
+  default     = "ghr-cp-invoker"
+}
+
+variable "webhook_account_id" {
+  type        = string
+  description = "Account id of the webhook service account only used if service account management is disabled."
+  default     = "ghr-webhook"
+}
+
 variable "enable_debug" {
   type        = bool
   description = "Whether to enable debug mode"
