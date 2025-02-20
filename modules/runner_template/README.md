@@ -6,6 +6,7 @@
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.8 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 6.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | ~> 3.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.0 |
 
 ## Providers
 
@@ -13,7 +14,7 @@
 |------|---------|
 | <a name="provider_google"></a> [google](#provider\_google) | ~> 6.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | ~> 3.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | ~> 3.0 |
 
 ## Modules
 
@@ -30,6 +31,7 @@ No modules.
 | [google_storage_bucket_iam_member.runner](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_iam_member) | resource |
 | [google_storage_bucket_object.startup_script](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
 | [random_string.bucket_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
+| [google_service_account.runner](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/service_account) | data source |
 | [http_http.github_runner_release_json](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
 
 ## Inputs
@@ -37,6 +39,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_additional_disks"></a> [additional\_disks](#input\_additional\_disks) | Additional disks to attach to the runner | `list(any)` | n/a | yes |
+| <a name="input_disable_service_account_management"></a> [disable\_service\_account\_management](#input\_disable\_service\_account\_management) | Whether the used service accounts should be create by this module. | `bool` | n/a | yes |
 | <a name="input_disk_size_gb"></a> [disk\_size\_gb](#input\_disk\_size\_gb) | The disk size in GB to deploy | `number` | n/a | yes |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | The disk type to deploy | `string` | n/a | yes |
 | <a name="input_image_path"></a> [image\_path](#input\_image\_path) | The image to deploy | `string` | n/a | yes |
@@ -46,6 +49,7 @@ No modules.
 | <a name="input_on_host_maintenance"></a> [on\_host\_maintenance](#input\_on\_host\_maintenance) | The maintenance policy for the runner | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The GCP project ID to deploy all resources into | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | The region to deploy all resources into | `string` | n/a | yes |
+| <a name="input_runner_account_id"></a> [runner\_account\_id](#input\_runner\_account\_id) | Account id of the runner service account only used if service account management is disabled. | `string` | n/a | yes |
 | <a name="input_runner_dir"></a> [runner\_dir](#input\_runner\_dir) | The directory to run the runner in | `string` | n/a | yes |
 | <a name="input_runner_user"></a> [runner\_user](#input\_runner\_user) | The user to run the runner as | `string` | n/a | yes |
 | <a name="input_runner_version"></a> [runner\_version](#input\_runner\_version) | GitHub Runner version to install | `string` | n/a | yes |
