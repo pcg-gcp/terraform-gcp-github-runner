@@ -156,6 +156,7 @@ module "webhook" {
   region     = var.region
 
   disable_service_account_management = var.disable_service_account_management
+  webhook_account_id                 = var.webhook_account_id
 
   enable_debug = var.enable_debug
 
