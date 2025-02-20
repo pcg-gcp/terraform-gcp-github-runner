@@ -26,12 +26,14 @@ No modules.
 | [google_secret_manager_secret_iam_member.webhook](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret_iam_member) | resource |
 | [google_service_account.webhook](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
 | [google_service_account_iam_member.admin-account-iam](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account_iam_member) | resource |
+| [google_service_account.webhook](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/service_account) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_control_plane_url"></a> [control\_plane\_url](#input\_control\_plane\_url) | The control plane URL | `string` | n/a | yes |
+| <a name="input_disable_service_account_management"></a> [disable\_service\_account\_management](#input\_disable\_service\_account\_management) | Whether the used service accounts should be create by this module. | `bool` | n/a | yes |
 | <a name="input_enable_debug"></a> [enable\_debug](#input\_enable\_debug) | Whether to enable debug mode | `bool` | n/a | yes |
 | <a name="input_forward_delay_seconds"></a> [forward\_delay\_seconds](#input\_forward\_delay\_seconds) | The number of seconds the webhook handler delays events before forwarding them to the control plane | `number` | n/a | yes |
 | <a name="input_image"></a> [image](#input\_image) | The image to deploy | `string` | n/a | yes |
@@ -43,6 +45,7 @@ No modules.
 | <a name="input_region"></a> [region](#input\_region) | The region to deploy all resources into | `string` | `"europe-west1"` | no |
 | <a name="input_runner_labels"></a> [runner\_labels](#input\_runner\_labels) | Github runner labels | `list(string)` | n/a | yes |
 | <a name="input_task_queue_path"></a> [task\_queue\_path](#input\_task\_queue\_path) | The path to the task queue | `string` | n/a | yes |
+| <a name="input_webhook_account_id"></a> [webhook\_account\_id](#input\_webhook\_account\_id) | Account id of the webhook service account only used if service account management is disabled. | `string` | n/a | yes |
 | <a name="input_webhook_secret_id"></a> [webhook\_secret\_id](#input\_webhook\_secret\_id) | The secret ID for the webhook | `string` | n/a | yes |
 | <a name="input_webhook_secret_version"></a> [webhook\_secret\_version](#input\_webhook\_secret\_version) | The secret version for the webhook | `string` | n/a | yes |
 

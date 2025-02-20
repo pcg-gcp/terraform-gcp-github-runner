@@ -3,9 +3,9 @@ output "service_url" {
 }
 
 output "invoker_service_account" {
-  value = google_service_account.invoker.email
+  value = local.invoker_email
 }
 
 output "invoker_service_account_id" {
-  value = google_service_account.invoker.id
+  value = var.disable_service_account_management ? data.google_service_account.invoker[0].id : google_service_account.invoker[0].id
 }

@@ -27,7 +27,7 @@ resource "google_cloud_tasks_queue" "github_events" {
   name     = "github-job-events-${random_string.queue_suffix.result}"
   location = var.region
 
-  depends_on = [google_project_service.required_services["cloudtasks.googleapis.com"]]
+  depends_on = [google_project_service.required_services]
 }
 
 resource "google_secret_manager_secret" "webhook_secret" {
@@ -41,7 +41,7 @@ resource "google_secret_manager_secret" "webhook_secret" {
     }
   }
 
-  depends_on = [google_project_service.required_services["secretmanager.googleapis.com"]]
+  depends_on = [google_project_service.required_services]
 }
 
 resource "google_secret_manager_secret_version" "webhook_secret" {
@@ -61,7 +61,7 @@ resource "google_secret_manager_secret" "github_auth_secret" {
     }
   }
 
-  depends_on = [google_project_service.required_services["secretmanager.googleapis.com"]]
+  depends_on = [google_project_service.required_services]
 }
 
 resource "google_secret_manager_secret_version" "github_auth_secret" {
@@ -83,6 +83,9 @@ module "runner_template" {
   source     = "./modules/runner_template"
   project_id = var.project_id
   region     = var.region
+
+  disable_service_account_management = var.disable_service_account_management
+  runner_account_id                  = var.runner_account_id
 
   vpc_name    = var.vpc_name
   subnet_name = var.subnet_name
@@ -110,6 +113,10 @@ module "control_plane" {
   source     = "./modules/control_plane"
   project_id = var.project_id
   region     = var.region
+
+  disable_service_account_management = var.disable_service_account_management
+  control_plane_account_id           = var.control_plane_account_id
+  invoker_account_id                 = var.invoker_account_id
 
   allowed_zones         = var.allowed_zones
   use_strict_zone_order = var.use_strict_zone_order
@@ -147,6 +154,8 @@ module "webhook" {
   source     = "./modules/webhook"
   project_id = var.project_id
   region     = var.region
+
+  disable_service_account_management = var.disable_service_account_management
 
   enable_debug = var.enable_debug
 

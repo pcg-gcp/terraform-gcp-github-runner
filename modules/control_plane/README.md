@@ -28,18 +28,23 @@ No modules.
 | [google_service_account.control_plane](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
 | [google_service_account.invoker](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
 | [google_service_account_iam_member.runner_user](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account_iam_member) | resource |
+| [google_service_account.control_plane](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/service_account) | data source |
+| [google_service_account.invoker](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/service_account) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_allowed_zones"></a> [allowed\_zones](#input\_allowed\_zones) | The zones to deploy the runner instances into.<br/>If not set the runner will be deployed into any zone in the region.<br/>Also see use\_strict\_zone\_order | `list(string)` | n/a | yes |
+| <a name="input_control_plane_account_id"></a> [control\_plane\_account\_id](#input\_control\_plane\_account\_id) | Account id of the control plane service account only used if service account management is disabled. | `string` | n/a | yes |
+| <a name="input_disable_service_account_management"></a> [disable\_service\_account\_management](#input\_disable\_service\_account\_management) | Whether the used service accounts should be create by this module. | `bool` | n/a | yes |
 | <a name="input_enable_debug"></a> [enable\_debug](#input\_enable\_debug) | Whether to enable debug mode | `bool` | n/a | yes |
 | <a name="input_ephemeral"></a> [ephemeral](#input\_ephemeral) | Whether to use ephemeral runners | `bool` | n/a | yes |
 | <a name="input_github_app_id"></a> [github\_app\_id](#input\_github\_app\_id) | The GitHub App ID | `string` | n/a | yes |
 | <a name="input_image"></a> [image](#input\_image) | The image to deploy | `string` | n/a | yes |
 | <a name="input_image_tag"></a> [image\_tag](#input\_image\_tag) | The tag of the image to deploy | `string` | n/a | yes |
 | <a name="input_instance_template_name"></a> [instance\_template\_name](#input\_instance\_template\_name) | The name of the instance template to use for runner instances | `string` | n/a | yes |
+| <a name="input_invoker_account_id"></a> [invoker\_account\_id](#input\_invoker\_account\_id) | Account id of the invoker service account only used if service account management is disabled. | `string` | n/a | yes |
 | <a name="input_max_instance_count"></a> [max\_instance\_count](#input\_max\_instance\_count) | The maximum number of instances to run | `number` | n/a | yes |
 | <a name="input_max_runner_count"></a> [max\_runner\_count](#input\_max\_runner\_count) | The maximum number of runners that should be deployed at the same time | `number` | n/a | yes |
 | <a name="input_min_runner_count"></a> [min\_runner\_count](#input\_min\_runner\_count) | The minimum number of runners that should be deployed at all times | `number` | n/a | yes |

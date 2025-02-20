@@ -8,6 +8,16 @@ variable "region" {
   description = "The region to deploy all resources into"
 }
 
+variable "disable_service_account_management" {
+  type        = bool
+  description = "Whether the used service accounts should be create by this module."
+}
+
+variable "runner_account_id" {
+  type        = string
+  description = "Account id of the runner service account only used if service account management is disabled."
+}
+
 variable "vpc_name" {
   type        = string
   description = "The VPC to deploy runner instances into"
