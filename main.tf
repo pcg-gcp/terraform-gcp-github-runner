@@ -1,9 +1,9 @@
 locals {
   runner_labels = sort(distinct(concat(["self-hosted", "linux", "x64"], var.runner_extra_labels)))
-  required_services = concat(
+  required_services = var.enable_apis ? concat(
     ["compute.googleapis.com", "run.googleapis.com", "cloudtasks.googleapis.com", "secretmanager.googleapis.com", "cloudscheduler.googleapis.com"],
     var.use_remote_repository ? ["artifactregistry.googleapis.com"] : []
-  )
+  ) : []
 
   effective_control_plane_version = var.control_plane_version == "" ? local.module_version : var.control_plane_version
   effective_webhook_version       = var.webhook_version == "" ? local.module_version : var.webhook_version

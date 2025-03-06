@@ -54,6 +54,7 @@ Please make sure to follow the commit message convention when creating pull requ
 | <a name="input_control_plane_oci_image"></a> [control\_plane\_oci\_image](#input\_control\_plane\_oci\_image) | The control plane OCI image to deploy. This needs to be the full path without the image tag. This is only used if use\_remote\_repository is set to false | `string` | `""` | no |
 | <a name="input_control_plane_version"></a> [control\_plane\_version](#input\_control\_plane\_version) | The version of the control plane to deploy. If not set the module version will be used | `string` | `""` | no |
 | <a name="input_disable_service_account_management"></a> [disable\_service\_account\_management](#input\_disable\_service\_account\_management) | Whether the used service accounts should be create by this module. | `bool` | `false` | no |
+| <a name="input_enable_apis"></a> [enable\_apis](#input\_enable\_apis) | Whether this module should enable the required apis. | `bool` | `true` | no |
 | <a name="input_enable_debug"></a> [enable\_debug](#input\_enable\_debug) | Whether to enable debug mode | `bool` | `false` | no |
 | <a name="input_ephemeral"></a> [ephemeral](#input\_ephemeral) | Whether to use ephemeral runners | `bool` | `false` | no |
 | <a name="input_forward_delay_seconds"></a> [forward\_delay\_seconds](#input\_forward\_delay\_seconds) | The number of seconds the webhook handler delays events before forwarding them to the control plane | `number` | `10` | no |

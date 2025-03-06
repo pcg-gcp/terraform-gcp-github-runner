@@ -35,6 +35,12 @@ variable "disable_service_account_management" {
   default     = false
 }
 
+variable "enable_apis" {
+  type        = bool
+  description = "Whether this module should enable the required apis."
+  default     = true
+}
+
 variable "runner_account_id" {
   type        = string
   description = "Account id of the runner service account only used if service account management is disabled."
