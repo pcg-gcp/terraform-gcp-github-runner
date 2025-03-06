@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.0](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.6.2...v0.7.0) (2025-03-06)
+
+
+### Features
+
+* **terraform:** Add variable to control whether apis should be enable ([3d33403](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/3d3340305384c70a9de76ef2fd3238daf60e6e52))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/bradleyfalzon/ghinstallation/v2 to v2.14.0 ([458e42a](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/458e42a36f8bb00dd797ee0c6052318a69075a5e))
+* **deps:** update module github.com/bradleyfalzon/ghinstallation/v2 to v2.14.0 ([8dc56b2](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/8dc56b29c568216d125c0b3581eeae1fcb2e08b8))
+* **deps:** update module google.golang.org/api to v0.223.0 ([a153d5d](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/a153d5ddfd98f83aa231d646994a8096936dacd5))
+* **deps:** update module google.golang.org/api to v0.223.0 ([9998f2e](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/9998f2e99678f2ffc3db44012018489d85de7ce5))
+
 ## [0.6.2](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.6.1...v0.6.2) (2025-02-20)
 
 
