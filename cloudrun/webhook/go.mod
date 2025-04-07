@@ -7,6 +7,7 @@ toolchain go1.24.0
 require (
 	cloud.google.com/go/cloudtasks v1.13.3
 	github.com/google/go-github/v69 v69.2.0
+	github.com/google/go-github/v71 v71.0.0
 	github.com/sethvargo/go-envconfig v1.1.1
 	google.golang.org/protobuf v1.36.5
 )
