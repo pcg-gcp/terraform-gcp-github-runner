@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.2](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.1...v0.8.2) (2025-04-16)
+
+
+### Bug Fixes
+
+* **terraform:** Fix sudo runners ([fc69afb](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/fc69afbc23ac6a8fd4ded13ca37cf48677afa2a6))
+
 ## [0.8.1](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.0...v0.8.1) (2025-04-16)
 
 
