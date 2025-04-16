@@ -17,7 +17,9 @@ sudo service docker start
 echo "Creating user \"${runner_user}\""
 sudo useradd -m ${runner_user}
 sudo usermod -aG docker ${runner_user}
-
+%{if grant_sudo == true }
+sudo usermod -aG sudo ${runner_user}
+%{ endif }
 echo "Creating action runner directory"
 mkdir -p ${runner_dir}
 

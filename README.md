@@ -60,6 +60,7 @@ Please make sure to follow the commit message convention when creating pull requ
 | <a name="input_forward_delay_seconds"></a> [forward\_delay\_seconds](#input\_forward\_delay\_seconds) | The number of seconds the webhook handler delays events before forwarding them to the control plane | `number` | `10` | no |
 | <a name="input_github_app_id"></a> [github\_app\_id](#input\_github\_app\_id) | The GitHub App ID | `string` | n/a | yes |
 | <a name="input_github_app_private_key_base64"></a> [github\_app\_private\_key\_base64](#input\_github\_app\_private\_key\_base64) | The base64 encoded private key of the GitHub App | `string` | n/a | yes |
+| <a name="input_grant_runner_user_sudo"></a> [grant\_runner\_user\_sudo](#input\_grant\_runner\_user\_sudo) | Whether to grant the runner user sudo access | `bool` | `false` | no |
 | <a name="input_include_install_step"></a> [include\_install\_step](#input\_include\_install\_step) | Whether to include the install step for the setup script | `bool` | `true` | no |
 | <a name="input_invoker_account_id"></a> [invoker\_account\_id](#input\_invoker\_account\_id) | Account id of the invoker service account only used if service account management is disabled. | `string` | `"ghr-cp-invoker"` | no |
 | <a name="input_max_runner_count"></a> [max\_runner\_count](#input\_max\_runner\_count) | The maximum number of runners that should be deployed at the same time | `number` | `10` | no |

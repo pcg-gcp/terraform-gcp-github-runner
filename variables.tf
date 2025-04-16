@@ -152,6 +152,12 @@ variable "runner_user" {
   default     = "ghrunner"
 }
 
+variable "grant_runner_user_sudo" {
+  type        = bool
+  description = "Whether to grant the runner user sudo access"
+  default     = false
+}
+
 variable "runner_dir" {
   type        = string
   description = "The directory to run the runner in"
