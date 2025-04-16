@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.7.0...v0.8.0) (2025-04-16)
+
+
+### Features
+
+* **runner:** Add sudo flag ([05d4fb3](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/05d4fb3ffaaac5034231bf8bf388bad56964d115))
+
 ## [0.7.0](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.6.2...v0.7.0) (2025-03-06)
 
 
