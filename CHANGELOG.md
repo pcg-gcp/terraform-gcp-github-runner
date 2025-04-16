@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.1](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.0...v0.8.1) (2025-04-16)
+
+
+### Bug Fixes
+
+* **terraform:** Require terraform version 1.11 or higher ([29a0c45](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/29a0c45e17c60e0656a2ec020a3d2ea7948ad7c3))
+* **terraform:** Use write only attributes ([969231a](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/969231aaec4c89db9ac099877bda65c50dc848b9))
+
 ## [0.8.0](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.7.0...v0.8.0) (2025-04-16)
 
 
