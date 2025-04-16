@@ -42,6 +42,7 @@ No modules.
 | <a name="input_disable_service_account_management"></a> [disable\_service\_account\_management](#input\_disable\_service\_account\_management) | Whether the used service accounts should be create by this module. | `bool` | n/a | yes |
 | <a name="input_disk_size_gb"></a> [disk\_size\_gb](#input\_disk\_size\_gb) | The disk size in GB to deploy | `number` | n/a | yes |
 | <a name="input_disk_type"></a> [disk\_type](#input\_disk\_type) | The disk type to deploy | `string` | n/a | yes |
+| <a name="input_grant_runner_user_sudo"></a> [grant\_runner\_user\_sudo](#input\_grant\_runner\_user\_sudo) | Whether to grant the runner user sudo access | `bool` | n/a | yes |
 | <a name="input_image_path"></a> [image\_path](#input\_image\_path) | The image to deploy | `string` | n/a | yes |
 | <a name="input_include_install_step"></a> [include\_install\_step](#input\_include\_install\_step) | Whether to include the install step for the setup script | `bool` | n/a | yes |
 | <a name="input_machine_type"></a> [machine\_type](#input\_machine\_type) | The machine type to deploy | `string` | n/a | yes |
