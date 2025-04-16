@@ -68,6 +68,11 @@ variable "runner_user" {
   description = "The user to run the runner as"
 }
 
+variable "grant_runner_user_sudo" {
+  type        = bool
+  description = "Whether to grant the runner user sudo access"
+}
+
 variable "runner_dir" {
   type        = string
   description = "The directory to run the runner in"

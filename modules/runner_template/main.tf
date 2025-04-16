@@ -62,6 +62,7 @@ resource "google_storage_bucket_object" "startup_script" {
     include_run         = true,
     node_version        = local.effective_node_version,
     runner_user         = var.runner_user,
+    grant_sudo          = var.grant_runner_user_sudo,
     runner_dir          = var.runner_dir,
     runner_download_url = "https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz"
   })

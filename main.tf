@@ -100,11 +100,12 @@ module "runner_template" {
   disk_size_gb     = var.runner_disk_size_gb
   additional_disks = var.runner_additional_disks
 
-  runner_user          = var.runner_user
-  runner_dir           = var.runner_dir
-  runner_version       = var.runner_version
-  node_version         = var.node_version
-  include_install_step = var.include_install_step
+  runner_user            = var.runner_user
+  grant_runner_user_sudo = var.grant_runner_user_sudo
+  runner_dir             = var.runner_dir
+  runner_version         = var.runner_version
+  node_version           = var.node_version
+  include_install_step   = var.include_install_step
 
   depends_on = [google_project_service.required_services]
 }
