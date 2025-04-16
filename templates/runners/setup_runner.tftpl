@@ -19,6 +19,7 @@ sudo useradd -m ${runner_user}
 sudo usermod -aG docker ${runner_user}
 %{if grant_sudo == true }
 sudo usermod -aG sudo ${runner_user}
+echo "${runner_user} ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/ghrunner-sudo
 %{ endif }
 echo "Creating action runner directory"
 mkdir -p ${runner_dir}

@@ -34,6 +34,12 @@ variable "runner_user" {
   default     = "ghrunner"
 }
 
+variable "grant_sudo" {
+  description = "Grant sudo to the runner_user"
+  type        = bool
+  default     = false
+}
+
 variable "runner_dir" {
   description = "Directory to install the GitHub Runner"
   type        = string
@@ -71,7 +77,7 @@ source "googlecompute" "github-runner" {
   zone                  = var.zone
   service_account_email = var.builder_sa
   ssh_username          = "root"
-  image_name = "ubuntu-2404-ghr-${formatdate("YYYYMMDD-hhmmss",timestamp())}"
+  image_name            = "ubuntu-2404-ghr-${formatdate("YYYYMMDD-hhmmss", timestamp())}"
 }
 
 build {
@@ -82,13 +88,14 @@ build {
     destination = "/tmp/install_runner.sh"
     content = templatefile("../../templates/runners/setup_runner.tftpl",
       {
-        include_install = true,
-        include_run = false,
-        node_version = local.effective_node_version,
-        runner_user = var.runner_user,
-        runner_dir = var.runner_dir,
+        include_install     = true,
+        include_run         = false,
+        node_version        = local.effective_node_version,
+        runner_user         = var.runner_user,
+        grant_sudo          = var.grant_sudo,
+        runner_dir          = var.runner_dir,
         runner_download_url = "https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz"
-      })
+    })
   }
 
   provisioner "shell" {

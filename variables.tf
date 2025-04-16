@@ -154,7 +154,7 @@ variable "runner_user" {
 
 variable "grant_runner_user_sudo" {
   type        = bool
-  description = "Whether to grant the runner user sudo access"
+  description = "Whether to grant the runner user sudo access. This only has an effect if include_install_step is set to true"
   default     = false
 }
 
