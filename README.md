@@ -1,12 +1,28 @@
 # terraform-gcp-github-runner
 
-This repository uses [Conventional Commit messages](https://www.conventionalcommits.org/) to automatically generate a changelog and versioning. The following commit types are supported:
+This repository provides a Terraform module to deploy self-hosted GitHub Runners
+on Google Cloud GCE Instances. These runners scale automatically based on GitHub
+events and even support scale down to zero and spot instances.
+
+## License
+
+This module is licensed under the Apache License Version 2.0.
+Please see the LICENSE file for more details.
+
+## Contributing
+
+This repository uses [Conventional Commit messages](https://www.conventionalcommits.org/)
+to automatically generate a changelog and versioning. The following commit types
+are supported:
+
 - fix: A bug fix (PATCH)
 - feat: A new feature (MINOR)
 - fix!, feat!, refactor! etc.: A breaking change (MAJOR)
 
 Please make sure to follow the commit message convention when creating pull requests.
 
+<details>
+<summary>Terraform documentation</summary>
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -104,3 +120,4 @@ Please make sure to follow the commit message convention when creating pull requ
 | <a name="output_webhook_secret"></a> [webhook\_secret](#output\_webhook\_secret) | n/a |
 | <a name="output_webhook_url"></a> [webhook\_url](#output\_webhook\_url) | n/a |
 <!-- END_TF_DOCS -->
+</details>
