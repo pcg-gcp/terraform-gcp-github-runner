@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.3](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.2...v0.8.3) (2025-05-09)
+
+
+### Bug Fixes
+
+* **terraform:** Merge pull request [#86](https://github.com/pcg-gcp/terraform-gcp-github-runner/issues/86) from pcg-gcp/keep-opentofu-compatability ([02b7dad](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/02b7dadf88e583159fa955b8a2de2677bc9b9416))
+
 ## [0.8.2](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.1...v0.8.2) (2025-04-16)
 
 
