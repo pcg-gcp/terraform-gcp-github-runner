@@ -11,7 +11,7 @@ import (
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	taskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
-	"github.com/google/go-github/v71/github"
+	"github.com/google/go-github/v72/github"
 	"github.com/sethvargo/go-envconfig"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
