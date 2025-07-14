@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.5](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.4...v0.8.5) (2025-07-14)
+
+
+### Bug Fixes
+
+* **deps:** update module cloud.google.com/go/secretmanager to v1.15.0 ([6e1a24a](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/6e1a24ab2924345bb8394277e18e780b233ad503))
+* **deps:** update module cloud.google.com/go/secretmanager to v1.15.0 ([78cff04](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/78cff04804a67ac1fccd13db6be54e18e9524a75))
+* **deps:** update module github.com/bradleyfalzon/ghinstallation/v2 to v2.16.0 ([6497f2b](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/6497f2bcd54517f154619210f790611b41ba1d47))
+* **deps:** update module github.com/bradleyfalzon/ghinstallation/v2 to v2.16.0 ([7db228b](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/7db228b422554b37f951ee8531b536c413237a6a))
+* **deps:** update module github.com/google/go-github/v71 to v73 ([8680d80](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/8680d80ac00c21dbe14e51cab73603bc25d1411c))
+* **deps:** update module github.com/google/go-github/v71 to v73 ([ec0c6d3](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/ec0c6d38a5b8a071879175281aee896205f0e26f))
+* **deps:** update module google.golang.org/api to v0.241.0 ([3bf93bf](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/3bf93bf78bde219fbb3c6e449d5eaca79b2477fb))
+* **deps:** update module google.golang.org/api to v0.241.0 ([4b3de85](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/4b3de8551c81eceedde7bd43126cdd01f776fd30))
+
 ## [0.8.4](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.3...v0.8.4) (2025-05-13)
 
 
