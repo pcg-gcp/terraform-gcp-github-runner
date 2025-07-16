@@ -9,7 +9,7 @@ require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.16.0
 	github.com/google/go-github/v73 v73.0.0
 	github.com/sethvargo/go-envconfig v1.3.0
-	google.golang.org/api v0.241.0
+	google.golang.org/api v0.242.0
 )
 
 require (
