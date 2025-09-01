@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.6](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.5...v0.8.6) (2025-09-01)
+
+
+### Miscellaneous Chores
+
+* release 0.8.6 ([0b8f0ea](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/0b8f0eac0a901eb7bd04f7291563446af6cd74dc))
+
 ## [0.8.5](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.4...v0.8.5) (2025-07-14)
 
 
