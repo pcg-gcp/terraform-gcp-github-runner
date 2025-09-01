@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/google/go-github/v73/github"
+	"github.com/google/go-github/v74/github"
 	"google.golang.org/api/compute/v1"
 )
 
