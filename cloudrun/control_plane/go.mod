@@ -2,7 +2,7 @@ module github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane
 
 go 1.24.0
 
-toolchain go1.24.6
+toolchain go1.25.0
 
 require (
 	cloud.google.com/go/secretmanager v1.15.0
