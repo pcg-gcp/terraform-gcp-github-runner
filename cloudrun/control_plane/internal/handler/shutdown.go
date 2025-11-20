@@ -42,7 +42,10 @@ func (h *ControlPlaneHandler) StopRunner(w http.ResponseWriter, r *http.Request)
 	wg.Wait()
 	slog.Info("All instances processed. Exiting.")
 
-	fmt.Fprint(w, "Success!")
+	_, err = fmt.Fprint(w, "Success!")
+	if err != nil {
+		slog.Warn(fmt.Sprintf("Error writing response: %s", err))
+	}
 }
 
 func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sync.WaitGroup, ctx context.Context) {

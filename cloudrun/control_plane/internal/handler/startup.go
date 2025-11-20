@@ -25,7 +25,10 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 		return
 	} else if !ok {
 		slog.Info(fmt.Sprintf("Ignoring event for %s/%s", m.Owner, m.Repository))
-		fmt.Fprint(w, "Ignored")
+		_, err = fmt.Fprint(w, "Ignored")
+		if err != nil {
+			slog.Warn(fmt.Sprintf("Error writing response: %s", err))
+		}
 		return
 	}
 
@@ -63,7 +66,10 @@ func (h *ControlPlaneHandler) StartRunner(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	fmt.Fprint(w, "Success!")
+	_, err = fmt.Fprint(w, "Success!")
+	if err != nil {
+		slog.Warn(fmt.Sprintf("Error writing response: %s", err))
+	}
 }
 
 func randomHex(n int) (string, error) {
