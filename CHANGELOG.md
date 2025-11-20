@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.8.7](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.6...v0.8.7) (2025-11-20)
+
+
+### Bug Fixes
+
+* **deps:** update module cloud.google.com/go/cloudtasks to v1.13.7 ([552637d](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/552637d935c73c7b269fe7703b67a2536454f72f))
+* **deps:** update module cloud.google.com/go/cloudtasks to v1.13.7 ([638030f](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/638030f48ce292ae2af0c782fda3207f128c193c))
+* **deps:** update module cloud.google.com/go/secretmanager to v1.16.0 ([c808508](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/c8085089b862d5738ba00d2884436a610fad817b))
+* **deps:** update module cloud.google.com/go/secretmanager to v1.16.0 ([3afa240](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/3afa240eba9d43896e84585e35c23248676d72b3))
+* **deps:** update module github.com/bradleyfalzon/ghinstallation/v2 to v2.17.0 ([27c7ae9](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/27c7ae92909228a3cb34d8c215b12ae953122a85))
+* **deps:** update module github.com/bradleyfalzon/ghinstallation/v2 to v2.17.0 ([aebeeb6](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/aebeeb6e61cbe5c5e7bb4c9f43c3fd50b060c0d3))
+* **deps:** update module github.com/google/go-github/v74 to v79 ([de87c22](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/de87c22c38a468b6f9096660102f1bd8de4bd6f5))
+* **deps:** update module github.com/google/go-github/v74 to v79 ([a3c575c](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/a3c575c7bf25299e1783508264cf495d6304d066))
+* **deps:** update module google.golang.org/api to v0.256.0 ([3476021](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/3476021c9da321040dfaed874ddb4675168f4364))
+* **deps:** update module google.golang.org/api to v0.256.0 ([ae96d69](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/ae96d69920605a1fb84824b18414f5f970cb14b5))
+* **deps:** update module google.golang.org/protobuf to v1.36.10 ([efff68d](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/efff68de682c74816b1932e63ce768231b71b743))
+* **deps:** update module google.golang.org/protobuf to v1.36.10 ([85414af](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/85414afa297c697a547388348bf770c09f63990f))
+
 ## [0.8.6](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.5...v0.8.6) (2025-09-01)
 
 
