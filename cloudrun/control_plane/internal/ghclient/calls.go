@@ -1,3 +1,4 @@
+// Package ghclient contains the code for the interaction with github APIs.
 package ghclient
 
 import (
@@ -6,7 +7,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/google/go-github/v74/github"
+	"github.com/google/go-github/v79/github"
 	"google.golang.org/api/compute/v1"
 )
 
@@ -114,19 +115,19 @@ func (c *Client) GenerateRunnerConfig(installationID int64, owner, repository, i
 }
 
 func (c *Client) RemoveRunnerForInstance(instance *compute.Instance, ctx context.Context) (bool, error) {
-	var installationId int64
+	var installationID int64
 
 	repo := instance.Labels["ghr-repo"]
 	owner := instance.Labels["ghr-owner"]
 	runnerType := instance.Labels["ghr-type"]
 
-	installationId, err := c.getInstallationID(runnerType, owner, repo, ctx)
+	installationID, err := c.getInstallationID(runnerType, owner, repo, ctx)
 	if err != nil {
 		err = fmt.Errorf("failed to get installation id: %w", err)
 		return false, err
 	}
 
-	client, err := c.getClient(installationId)
+	client, err := c.getClient(installationID)
 	if err != nil {
 		err = fmt.Errorf("failed to create client: %w", err)
 		return false, err

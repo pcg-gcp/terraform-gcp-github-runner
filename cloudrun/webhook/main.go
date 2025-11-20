@@ -11,7 +11,7 @@ import (
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	taskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
-	"github.com/google/go-github/v74/github"
+	"github.com/google/go-github/v79/github"
 	"github.com/sethvargo/go-envconfig"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -117,7 +117,12 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to queue event", http.StatusInternalServerError)
 			return
 		}
-		defer client.Close()
+		defer func() {
+			err = client.Close()
+			if err != nil {
+				slog.Warn(fmt.Sprintf("Failed to close client: %v", err))
+			}
+		}()
 
 		scheduleTime := time.Now().Add(time.Second * time.Duration(s.cfg.DelaySeconds))
 
