@@ -7,6 +7,7 @@ toolchain go1.25.4
 require (
 	cloud.google.com/go/cloudtasks v1.13.7
 	github.com/google/go-github/v79 v79.0.0
+	github.com/google/go-github/v83 v83.0.0
 	github.com/sethvargo/go-envconfig v1.3.0
 	google.golang.org/protobuf v1.36.10
 )
@@ -19,7 +20,7 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.7 // indirect
 	github.com/googleapis/gax-go/v2 v2.15.0 // indirect
