@@ -1,6 +1,6 @@
 #! /bin/bash
 
-nerdctl build . -t europe-docker.pkg.dev/cw-td-sandbox/docker-repo/webhook:latest && nerdctl push europe-docker.pkg.dev/cw-td-sandbox/docker-repo/webhook:latest
+docker build . -t europe-docker.pkg.dev/cw-td-sandbox/docker-repo/webhook:latest && docker push europe-docker.pkg.dev/cw-td-sandbox/docker-repo/webhook:latest
 gcloud run deploy ghr-webhook \
   --region=europe-west1 \
   --project=cw-td-sandbox \
