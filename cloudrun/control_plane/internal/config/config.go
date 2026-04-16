@@ -15,7 +15,6 @@ type Config struct {
 	MaxRunnerCount        int           `env:"MAX_RUNNER_COUNT,required"`
 	MinRunnerCount        int           `env:"MIN_RUNNER_COUNT,required"`
 	MaxSetupTime          time.Duration `env:"MAX_SETUP_TIME,default=5m"`
-	MaxHardTimeout        time.Duration `env:"MAX_HARD_TIMEOUT,default=1h"`
 	EnableGuestAttributes bool          `env:"ENABLE_GUEST_ATTRIBUTES,default=false"`
 	UseStrictZoneOrder    bool          `env:"USE_STRICT_ZONE_ORDER,required"`
 	Ephemeral             bool          `env:"EPHEMERAL,required"`
