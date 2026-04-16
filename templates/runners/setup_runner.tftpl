@@ -1,4 +1,20 @@
 #!/bin/bash
+%{if enable_guest_attributes == true }
+function report_status() {
+  local status=$1
+  curl -X PUT --data "$status" http://metadata.google.internal/computeMetadata/v1/instance/guest-attributes/runner/status -H "Metadata-Flavor: Google" || true
+}
+
+function handle_error() {
+  echo "Error occurred, reporting failed status..."
+  report_status "failed"
+  exit 1
+}
+
+trap 'handle_error' ERR
+report_status "installing"
+%{ endif }
+
 %{if include_install == true }
 # This script is used to install a GitHub Runner on a Linux machine
 
@@ -51,6 +67,10 @@ runner_config=$(gcloud secrets versions access latest --secret=$config_secret)
 
 cd $runner_dir
 
+%{if enable_guest_attributes == true }
+report_status "configuring"
+%{ endif }
+
 if [ "$use_jit_config" = "true" ]; then
   echo "JIT config enabled. Starting runner with JIT config"
   runuser -u $runner_user -- ./run.sh --jitconfig $runner_config
@@ -64,6 +84,10 @@ else
   echo "Starting service"
   ./svc.sh start
 fi
+
+%{if enable_guest_attributes == true }
+report_status "done"
+%{ endif }
 
 echo "Runner started. Exiting"
 %{ endif }

@@ -72,6 +72,7 @@ Please make sure to follow the commit message convention when creating pull requ
 | <a name="input_disable_service_account_management"></a> [disable\_service\_account\_management](#input\_disable\_service\_account\_management) | Whether the used service accounts should be create by this module. | `bool` | `false` | no |
 | <a name="input_enable_apis"></a> [enable\_apis](#input\_enable\_apis) | Whether this module should enable the required apis. | `bool` | `true` | no |
 | <a name="input_enable_debug"></a> [enable\_debug](#input\_enable\_debug) | Whether to enable debug mode | `bool` | `false` | no |
+| <a name="input_enable_guest_attributes"></a> [enable\_guest\_attributes](#input\_enable\_guest\_attributes) | Enable guest attributes on runner instances to report setup status back to the control plane | `bool` | `false` | no |
 | <a name="input_ephemeral"></a> [ephemeral](#input\_ephemeral) | Whether to use ephemeral runners | `bool` | `false` | no |
 | <a name="input_forward_delay_seconds"></a> [forward\_delay\_seconds](#input\_forward\_delay\_seconds) | The number of seconds the webhook handler delays events before forwarding them to the control plane | `number` | `10` | no |
 | <a name="input_github_app_id"></a> [github\_app\_id](#input\_github\_app\_id) | The GitHub App ID | `string` | n/a | yes |
@@ -79,7 +80,9 @@ Please make sure to follow the commit message convention when creating pull requ
 | <a name="input_grant_runner_user_sudo"></a> [grant\_runner\_user\_sudo](#input\_grant\_runner\_user\_sudo) | Whether to grant the runner user sudo access. This only has an effect if include\_install\_step is set to true | `bool` | `false` | no |
 | <a name="input_include_install_step"></a> [include\_install\_step](#input\_include\_install\_step) | Whether to include the install step for the setup script | `bool` | `true` | no |
 | <a name="input_invoker_account_id"></a> [invoker\_account\_id](#input\_invoker\_account\_id) | Account id of the invoker service account only used if service account management is disabled. | `string` | `"ghr-cp-invoker"` | no |
+| <a name="input_max_hard_timeout"></a> [max\_hard\_timeout](#input\_max\_hard\_timeout) | The maximum time a runner is allowed to run before it is deleted, even if guest attributes indicate it is still setting up | `string` | `"1h"` | no |
 | <a name="input_max_runner_count"></a> [max\_runner\_count](#input\_max\_runner\_count) | The maximum number of runners that should be deployed at the same time | `number` | `10` | no |
+| <a name="input_max_setup_time"></a> [max\_setup\_time](#input\_max\_setup\_time) | The maximum time a runner is allowed to set up before it is deleted. Must be a valid Go time.Duration string (e.g., '5m', '1h'). | `string` | `"5m"` | no |
 | <a name="input_min_runner_count"></a> [min\_runner\_count](#input\_min\_runner\_count) | The minimum number of runners that should be deployed at all times | `number` | `0` | no |
 | <a name="input_node_version"></a> [node\_version](#input\_node\_version) | NodeJS version to install | `string` | `""` | no |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The GCP project ID to deploy all resources into | `string` | n/a | yes |

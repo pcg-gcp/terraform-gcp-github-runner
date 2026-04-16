@@ -55,9 +55,42 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 		slog.Error(fmt.Sprintf("Error parsing creation timestamp: %s", err))
 		return
 	}
-	if creationTimestamp.Add(5 * time.Minute).After(time.Now()) {
-		slog.Info(fmt.Sprintf("Instance %s has not been running for 5 minutes, skipping", instance.Name))
-		return
+
+	zoneSplit := strings.Split(instance.Zone, "/")
+	zone := zoneSplit[len(zoneSplit)-1]
+
+	if h.cfg.EnableGuestAttributes {
+		if creationTimestamp.Add(h.cfg.MaxHardTimeout).Before(time.Now()) {
+			slog.Info(fmt.Sprintf("Instance %s has exceeded hard timeout of %s, deleting", instance.Name, h.cfg.MaxHardTimeout))
+			h.deleteInstance(instance, zone, ctx)
+			return
+		}
+
+		status, err := h.gcpClient.GetGuestAttributes(instance.Name, zone, ctx)
+		if err != nil {
+			slog.Warn(fmt.Sprintf("Error getting guest attributes for instance %s: %v", instance.Name, err))
+		}
+
+		if status == "failed" {
+			slog.Info(fmt.Sprintf("Instance %s reported failed status, deleting", instance.Name))
+			h.deleteInstance(instance, zone, ctx)
+			return
+		}
+
+		if status == "installing" || status == "configuring" {
+			slog.Info(fmt.Sprintf("Instance %s is still setting up (status: %s), skipping", instance.Name, status))
+			return
+		}
+
+		if creationTimestamp.Add(h.cfg.MaxSetupTime).After(time.Now()) {
+			slog.Info(fmt.Sprintf("Instance %s has not been running for %s, skipping", instance.Name, h.cfg.MaxSetupTime))
+			return
+		}
+	} else {
+		if creationTimestamp.Add(h.cfg.MaxSetupTime).After(time.Now()) {
+			slog.Info(fmt.Sprintf("Instance %s has not been running for %s, skipping", instance.Name, h.cfg.MaxSetupTime))
+			return
+		}
 	}
 
 	removed, err := h.githubClient.RemoveRunnerForInstance(instance, ctx)
@@ -71,11 +104,12 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 	}
 
 	slog.Info(fmt.Sprintf("Runner %s removed", instance.Name))
+	h.deleteInstance(instance, zone, ctx)
+}
 
+func (h *ControlPlaneHandler) deleteInstance(instance *compute.Instance, zone string, ctx context.Context) {
 	slog.Info(fmt.Sprintf("Deleting instance %s", instance.Name))
-	zoneSplit := strings.Split(instance.Zone, "/")
-	zone := zoneSplit[len(zoneSplit)-1]
-	err = h.gcpClient.DeleteInstance(instance.Name, zone, ctx)
+	err := h.gcpClient.DeleteInstance(instance.Name, zone, ctx)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error deleting instance: %s", err))
 		return

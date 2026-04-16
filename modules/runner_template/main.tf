@@ -58,13 +58,14 @@ resource "google_storage_bucket" "runner_bucket" {
 resource "google_storage_bucket_object" "startup_script" {
   name = "setup_runner.sh"
   content = templatefile("${path.module}/../../templates/runners/setup_runner.tftpl", {
-    include_install     = var.include_install_step,
-    include_run         = true,
-    node_version        = local.effective_node_version,
-    runner_user         = var.runner_user,
-    grant_sudo          = var.grant_runner_user_sudo,
-    runner_dir          = var.runner_dir,
-    runner_download_url = "https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz"
+    include_install         = var.include_install_step,
+    include_run             = true,
+    node_version            = local.effective_node_version,
+    runner_user             = var.runner_user,
+    grant_sudo              = var.grant_runner_user_sudo,
+    runner_dir              = var.runner_dir,
+    enable_guest_attributes = var.enable_guest_attributes,
+    runner_download_url     = "https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz"
   })
   bucket = google_storage_bucket.runner_bucket.name
 }
@@ -125,11 +126,11 @@ resource "google_compute_instance_template" "runner" {
     subnetwork = var.subnet_name
   }
 
-  metadata = {
+  metadata = merge({
     startup-script-url = "gs://${google_storage_bucket.runner_bucket.name}/${google_storage_bucket_object.startup_script.name}"
     runner_user        = var.runner_user
     runner_dir         = var.runner_dir
-  }
+  }, var.enable_guest_attributes ? { enable-guest-attributes = "TRUE" } : {})
 
   service_account {
     email  = local.runner_email
