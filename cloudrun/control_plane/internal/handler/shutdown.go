@@ -67,19 +67,13 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 				slog.Warn(fmt.Sprintf("Error getting guest attributes for instance %s: %v", instance.Name, err))
 			}
 
-			if status == "failed" {
-				slog.Info(fmt.Sprintf("Instance %s reported failed status, deleting early", instance.Name))
-				h.deleteInstance(instance, zone, ctx)
-				return
-			}
-
 			if status == "installing" || status == "configuring" {
 				slog.Info(fmt.Sprintf("Instance %s is still setting up (status: %s), skipping", instance.Name, status))
 				return
 			}
 
-			if status == "done" {
-				slog.Info(fmt.Sprintf("Instance %s setup is done, proceeding to Github check", instance.Name))
+			if status == "done" || status == "failed" {
+				slog.Info(fmt.Sprintf("Instance %s reported status '%s', proceeding to Github check", instance.Name, status))
 				// Fall through to Github check
 			} else {
 				// No status or empty status yet
@@ -94,7 +88,7 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 		slog.Info(fmt.Sprintf("Instance %s has exceeded MaxSetupTime of %s, proceeding to Github check", instance.Name, h.cfg.MaxSetupTime))
 	}
 
-	// Instance has exceeded MaxSetupTime OR reported 'done', proceed with github runner deletion check
+	// Instance has exceeded MaxSetupTime OR reported 'done'/'failed', proceed with github runner deletion check
 	removed, err := h.githubClient.RemoveRunnerForInstance(instance, ctx)
 	if err != nil {
 		slog.Error("Failed to remove runner", slog.String("error", err.Error()))
