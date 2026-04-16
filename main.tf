@@ -134,7 +134,6 @@ module "control_plane" {
   min_runner_count        = var.min_runner_count
   max_runner_count        = var.max_runner_count
   max_setup_time          = var.max_setup_time
-  max_hard_timeout        = var.max_hard_timeout
   enable_guest_attributes = var.enable_guest_attributes
 
   instance_template_name    = module.runner_template.instance_template_name

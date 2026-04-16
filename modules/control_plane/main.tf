@@ -124,10 +124,6 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.max_setup_time
       }
       env {
-        name  = "MAX_HARD_TIMEOUT"
-        value = var.max_hard_timeout
-      }
-      env {
         name  = "ENABLE_GUEST_ATTRIBUTES"
         value = var.enable_guest_attributes
       }

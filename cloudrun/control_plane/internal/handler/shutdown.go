@@ -59,40 +59,42 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 	zoneSplit := strings.Split(instance.Zone, "/")
 	zone := zoneSplit[len(zoneSplit)-1]
 
-	if h.cfg.EnableGuestAttributes {
-		if creationTimestamp.Add(h.cfg.MaxHardTimeout).Before(time.Now()) {
-			slog.Info(fmt.Sprintf("Instance %s has exceeded hard timeout of %s, deleting", instance.Name, h.cfg.MaxHardTimeout))
-			h.deleteInstance(instance, zone, ctx)
-			return
-		}
+	if creationTimestamp.Add(h.cfg.MaxSetupTime).After(time.Now()) {
+		// Still within the MaxSetupTime window
+		if h.cfg.EnableGuestAttributes {
+			status, err := h.gcpClient.GetGuestAttributes(instance.Name, zone, ctx)
+			if err != nil {
+				slog.Warn(fmt.Sprintf("Error getting guest attributes for instance %s: %v", instance.Name, err))
+			}
 
-		status, err := h.gcpClient.GetGuestAttributes(instance.Name, zone, ctx)
-		if err != nil {
-			slog.Warn(fmt.Sprintf("Error getting guest attributes for instance %s: %v", instance.Name, err))
-		}
+			if status == "failed" {
+				slog.Info(fmt.Sprintf("Instance %s reported failed status, deleting early", instance.Name))
+				h.deleteInstance(instance, zone, ctx)
+				return
+			}
 
-		if status == "failed" {
-			slog.Info(fmt.Sprintf("Instance %s reported failed status, deleting", instance.Name))
-			h.deleteInstance(instance, zone, ctx)
-			return
-		}
+			if status == "installing" || status == "configuring" {
+				slog.Info(fmt.Sprintf("Instance %s is still setting up (status: %s), skipping", instance.Name, status))
+				return
+			}
 
-		if status == "installing" || status == "configuring" {
-			slog.Info(fmt.Sprintf("Instance %s is still setting up (status: %s), skipping", instance.Name, status))
-			return
-		}
-
-		if creationTimestamp.Add(h.cfg.MaxSetupTime).After(time.Now()) {
+			if status == "done" {
+				slog.Info(fmt.Sprintf("Instance %s setup is done, proceeding to Github check", instance.Name))
+				// Fall through to Github check
+			} else {
+				// No status or empty status yet
+				slog.Info(fmt.Sprintf("Instance %s has not been running for %s, skipping", instance.Name, h.cfg.MaxSetupTime))
+				return
+			}
+		} else {
 			slog.Info(fmt.Sprintf("Instance %s has not been running for %s, skipping", instance.Name, h.cfg.MaxSetupTime))
 			return
 		}
 	} else {
-		if creationTimestamp.Add(h.cfg.MaxSetupTime).After(time.Now()) {
-			slog.Info(fmt.Sprintf("Instance %s has not been running for %s, skipping", instance.Name, h.cfg.MaxSetupTime))
-			return
-		}
+		slog.Info(fmt.Sprintf("Instance %s has exceeded MaxSetupTime of %s, proceeding to Github check", instance.Name, h.cfg.MaxSetupTime))
 	}
 
+	// Instance has exceeded MaxSetupTime OR reported 'done', proceed with github runner deletion check
 	removed, err := h.githubClient.RemoveRunnerForInstance(instance, ctx)
 	if err != nil {
 		slog.Error("Failed to remove runner", slog.String("error", err.Error()))
