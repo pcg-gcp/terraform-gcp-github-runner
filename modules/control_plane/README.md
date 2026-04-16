@@ -39,6 +39,7 @@ No modules.
 | <a name="input_control_plane_account_id"></a> [control\_plane\_account\_id](#input\_control\_plane\_account\_id) | Account id of the control plane service account only used if service account management is disabled. | `string` | n/a | yes |
 | <a name="input_disable_service_account_management"></a> [disable\_service\_account\_management](#input\_disable\_service\_account\_management) | Whether the used service accounts should be create by this module. | `bool` | n/a | yes |
 | <a name="input_enable_debug"></a> [enable\_debug](#input\_enable\_debug) | Whether to enable debug mode | `bool` | n/a | yes |
+| <a name="input_enable_guest_attributes"></a> [enable\_guest\_attributes](#input\_enable\_guest\_attributes) | Enable guest attributes on runner instances to report setup status back to the control plane | `bool` | `false` | no |
 | <a name="input_ephemeral"></a> [ephemeral](#input\_ephemeral) | Whether to use ephemeral runners | `bool` | n/a | yes |
 | <a name="input_github_app_id"></a> [github\_app\_id](#input\_github\_app\_id) | The GitHub App ID | `string` | n/a | yes |
 | <a name="input_image"></a> [image](#input\_image) | The image to deploy | `string` | n/a | yes |
@@ -47,6 +48,7 @@ No modules.
 | <a name="input_invoker_account_id"></a> [invoker\_account\_id](#input\_invoker\_account\_id) | Account id of the invoker service account only used if service account management is disabled. | `string` | n/a | yes |
 | <a name="input_max_instance_count"></a> [max\_instance\_count](#input\_max\_instance\_count) | The maximum number of instances to run | `number` | n/a | yes |
 | <a name="input_max_runner_count"></a> [max\_runner\_count](#input\_max\_runner\_count) | The maximum number of runners that should be deployed at the same time | `number` | n/a | yes |
+| <a name="input_max_setup_time"></a> [max\_setup\_time](#input\_max\_setup\_time) | The maximum time a runner is allowed to set up before it is deleted. Must be a valid Go time.Duration string (e.g., '5m', '1h'). | `string` | n/a | yes |
 | <a name="input_min_runner_count"></a> [min\_runner\_count](#input\_min\_runner\_count) | The minimum number of runners that should be deployed at all times | `number` | n/a | yes |
 | <a name="input_private_key_secret_id"></a> [private\_key\_secret\_id](#input\_private\_key\_secret\_id) | The secret ID of the private key | `string` | n/a | yes |
 | <a name="input_private_key_secret_version"></a> [private\_key\_secret\_version](#input\_private\_key\_secret\_version) | The secret version of the private key | `string` | n/a | yes |
@@ -57,8 +59,8 @@ No modules.
 | <a name="input_shutdown_attempt_timeout"></a> [shutdown\_attempt\_timeout](#input\_shutdown\_attempt\_timeout) | The timeout for the shutdown attempt | `string` | n/a | yes |
 | <a name="input_shutdown_schedule"></a> [shutdown\_schedule](#input\_shutdown\_schedule) | The shutdown schedule in cron format | `string` | n/a | yes |
 | <a name="input_shutdown_schedule_timezone"></a> [shutdown\_schedule\_timezone](#input\_shutdown\_schedule\_timezone) | The timezone of the shutdown schedule | `string` | n/a | yes |
-| <a name="input_use_jit_config"></a> [use\_jit\_config](#input\_use\_jit\_config) | Whether to use JIT config | `bool` | `false` | no |
-| <a name="input_use_org_runners"></a> [use\_org\_runners](#input\_use\_org\_runners) | Whether to use github organization runners | `bool` | `false` | no |
+| <a name="input_use_jit_config"></a> [use\_jit\_config](#input\_use\_jit\_config) | Whether to use JIT config | `bool` | n/a | yes |
+| <a name="input_use_org_runners"></a> [use\_org\_runners](#input\_use\_org\_runners) | Whether to use github organization runners | `bool` | n/a | yes |
 | <a name="input_use_strict_zone_order"></a> [use\_strict\_zone\_order](#input\_use\_strict\_zone\_order) | If this is set to true and allowed\_zones is set the runner will always be deployed in the first available zone in the list unless it is unavailable.<br/>If allowed\_zones is not set the first zone returned by the API will be used.<br/>Otherwise the runner will be deployed in a random zone either from the allowed\_zones list or from the API. | `bool` | n/a | yes |
 
 ## Outputs
