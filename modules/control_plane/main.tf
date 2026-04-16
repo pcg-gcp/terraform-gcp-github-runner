@@ -120,6 +120,18 @@ resource "google_cloud_run_v2_service" "control_plane" {
         value = var.min_runner_count
       }
       env {
+        name  = "MAX_SETUP_TIME"
+        value = var.max_setup_time
+      }
+      env {
+        name  = "MAX_HARD_TIMEOUT"
+        value = var.max_hard_timeout
+      }
+      env {
+        name  = "ENABLE_GUEST_ATTRIBUTES"
+        value = var.enable_guest_attributes
+      }
+      env {
         name  = "RUNNER_LABELS"
         value = join(",", var.runner_labels)
       }

@@ -145,6 +145,22 @@ func (c *Client) GetAvailableZones() ([]string, error) {
 	return availableZones, nil
 }
 
+func (c *Client) GetGuestAttributes(instanceName, zone string, ctx context.Context) (string, error) {
+	call := c.computeService.Instances.GetGuestAttributes(c.cfg.ProjectID, zone, instanceName).Context(ctx).QueryPath("runner/")
+	attr, err := call.Do()
+	if err != nil {
+		return "", err
+	}
+	if attr != nil && attr.QueryValue != nil && len(attr.QueryValue.Items) > 0 {
+		for _, item := range attr.QueryValue.Items {
+			if item.Key == "status" {
+				return item.Value, nil
+			}
+		}
+	}
+	return "", nil
+}
+
 func (c *Client) pickZone() (string, error) {
 	availableZones, err := c.GetAvailableZones()
 	if err != nil {

@@ -114,13 +114,11 @@ variable "ephemeral" {
 variable "use_jit_config" {
   type        = bool
   description = "Whether to use JIT config"
-  default     = false
 }
 
 variable "use_org_runners" {
   type        = bool
   description = "Whether to use github organization runners"
-  default     = false
 }
 
 variable "max_runner_count" {
@@ -131,4 +129,21 @@ variable "max_runner_count" {
 variable "min_runner_count" {
   type        = number
   description = "The minimum number of runners that should be deployed at all times"
+}
+
+variable "max_setup_time" {
+  type        = string
+  description = "The maximum time a runner is allowed to set up before it is deleted. Must be a valid Go time.Duration string (e.g., '5m', '1h')."
+}
+
+variable "enable_guest_attributes" {
+  type        = bool
+  description = "Enable guest attributes on runner instances to report setup status back to the control plane"
+  default     = false
+}
+
+variable "max_hard_timeout" {
+  type        = string
+  description = "The maximum time a runner is allowed to run before it is deleted, even if guest attributes indicate it is still setting up"
+  default     = "1h"
 }

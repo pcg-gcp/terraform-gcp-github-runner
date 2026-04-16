@@ -100,12 +100,13 @@ module "runner_template" {
   disk_size_gb     = var.runner_disk_size_gb
   additional_disks = var.runner_additional_disks
 
-  runner_user            = var.runner_user
-  grant_runner_user_sudo = var.grant_runner_user_sudo
-  runner_dir             = var.runner_dir
-  runner_version         = var.runner_version
-  node_version           = var.node_version
-  include_install_step   = var.include_install_step
+  runner_user             = var.runner_user
+  grant_runner_user_sudo  = var.grant_runner_user_sudo
+  runner_dir              = var.runner_dir
+  runner_version          = var.runner_version
+  node_version            = var.node_version
+  include_install_step    = var.include_install_step
+  enable_guest_attributes = var.enable_guest_attributes
 
   depends_on = [google_project_service.required_services]
 }
@@ -130,8 +131,11 @@ module "control_plane" {
   use_jit_config  = var.use_jit_config
   use_org_runners = var.use_org_runners
 
-  min_runner_count = var.min_runner_count
-  max_runner_count = var.max_runner_count
+  min_runner_count        = var.min_runner_count
+  max_runner_count        = var.max_runner_count
+  max_setup_time          = var.max_setup_time
+  max_hard_timeout        = var.max_hard_timeout
+  enable_guest_attributes = var.enable_guest_attributes
 
   instance_template_name    = module.runner_template.instance_template_name
   runner_service_account_id = module.runner_template.runner_service_account_id

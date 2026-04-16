@@ -282,3 +282,21 @@ variable "shutdown_attempt_timeout" {
   description = "The timeout for the shutdown attempt"
   default     = "320s"
 }
+
+variable "max_setup_time" {
+  type        = string
+  description = "The maximum time a runner is allowed to set up before it is deleted. Must be a valid Go time.Duration string (e.g., '5m', '1h')."
+  default     = "5m"
+}
+
+variable "enable_guest_attributes" {
+  type        = bool
+  description = "Enable guest attributes on runner instances to report setup status back to the control plane"
+  default     = false
+}
+
+variable "max_hard_timeout" {
+  type        = string
+  description = "The maximum time a runner is allowed to run before it is deleted, even if guest attributes indicate it is still setting up"
+  default     = "1h"
+}
