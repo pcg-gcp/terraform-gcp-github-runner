@@ -6,7 +6,6 @@ variable "project_id" {
 variable "region" {
   type        = string
   description = "The region to deploy all resources into"
-  default     = "europe-west1"
 }
 
 variable "disable_service_account_management" {

@@ -139,5 +139,4 @@ variable "max_setup_time" {
 variable "enable_guest_attributes" {
   type        = bool
   description = "Enable guest attributes on runner instances to report setup status back to the control plane"
-  default     = false
 }

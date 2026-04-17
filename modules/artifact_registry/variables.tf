@@ -6,7 +6,6 @@ variable "project_id" {
 variable "region" {
   type        = string
   description = "The region to deploy the repository to."
-  default     = "europe-west1"
 }
 
 variable "remote_repository_url" {
