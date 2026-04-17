@@ -42,7 +42,7 @@ No modules.
 | <a name="input_invoker_service_account_id"></a> [invoker\_service\_account\_id](#input\_invoker\_service\_account\_id) | The service account ID to trigger the control plane | `string` | n/a | yes |
 | <a name="input_max_instance_count"></a> [max\_instance\_count](#input\_max\_instance\_count) | The maximum number of instances to run | `number` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The GCP project ID to deploy all resources into | `string` | n/a | yes |
-| <a name="input_region"></a> [region](#input\_region) | The region to deploy all resources into | `string` | `"europe-west1"` | no |
+| <a name="input_region"></a> [region](#input\_region) | The region to deploy all resources into | `string` | n/a | yes |
 | <a name="input_runner_labels"></a> [runner\_labels](#input\_runner\_labels) | Github runner labels | `list(string)` | n/a | yes |
 | <a name="input_task_queue_path"></a> [task\_queue\_path](#input\_task\_queue\_path) | The path to the task queue | `string` | n/a | yes |
 | <a name="input_webhook_account_id"></a> [webhook\_account\_id](#input\_webhook\_account\_id) | Account id of the webhook service account only used if service account management is disabled. | `string` | n/a | yes |

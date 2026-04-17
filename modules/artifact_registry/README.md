@@ -27,7 +27,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | The GCP project ID to deploy the repository to. | `string` | n/a | yes |
-| <a name="input_region"></a> [region](#input\_region) | The region to deploy the repository to. | `string` | `"europe-west1"` | no |
+| <a name="input_region"></a> [region](#input\_region) | The region to deploy the repository to. | `string` | n/a | yes |
 | <a name="input_remote_repository_url"></a> [remote\_repository\_url](#input\_remote\_repository\_url) | The URL of the remote repository to clone. | `string` | n/a | yes |
 
 ## Outputs

@@ -39,7 +39,7 @@ No modules.
 | <a name="input_control_plane_account_id"></a> [control\_plane\_account\_id](#input\_control\_plane\_account\_id) | Account id of the control plane service account only used if service account management is disabled. | `string` | n/a | yes |
 | <a name="input_disable_service_account_management"></a> [disable\_service\_account\_management](#input\_disable\_service\_account\_management) | Whether the used service accounts should be create by this module. | `bool` | n/a | yes |
 | <a name="input_enable_debug"></a> [enable\_debug](#input\_enable\_debug) | Whether to enable debug mode | `bool` | n/a | yes |
-| <a name="input_enable_guest_attributes"></a> [enable\_guest\_attributes](#input\_enable\_guest\_attributes) | Enable guest attributes on runner instances to report setup status back to the control plane | `bool` | `false` | no |
+| <a name="input_enable_guest_attributes"></a> [enable\_guest\_attributes](#input\_enable\_guest\_attributes) | Enable guest attributes on runner instances to report setup status back to the control plane | `bool` | n/a | yes |
 | <a name="input_ephemeral"></a> [ephemeral](#input\_ephemeral) | Whether to use ephemeral runners | `bool` | n/a | yes |
 | <a name="input_github_app_id"></a> [github\_app\_id](#input\_github\_app\_id) | The GitHub App ID | `string` | n/a | yes |
 | <a name="input_image"></a> [image](#input\_image) | The image to deploy | `string` | n/a | yes |
