@@ -52,6 +52,12 @@ variable "node_version" {
   default     = ""
 }
 
+variable "enable_guest_attributes" {
+  description = "Enable guest attributes for the runner"
+  type        = bool
+  default     = false
+}
+
 data "http" github_runner_release_json {
   url = "https://api.github.com/repos/actions/runner/releases/latest"
   request_headers = {
@@ -71,7 +77,7 @@ source "googlecompute" "github-runner" {
   zone                  = var.zone
   service_account_email = var.builder_sa
   ssh_username          = "root"
-  image_name = "ubuntu-2204-ghr-${formatdate("YYYYMMDD-hhmmss",timestamp())}"
+  image_name            = "ubuntu-2204-ghr-${formatdate("YYYYMMDD-hhmmss", timestamp())}"
 }
 
 build {
@@ -82,13 +88,14 @@ build {
     destination = "/tmp/install_runner.sh"
     content = templatefile("../../templates/runners/setup_runner.tftpl",
       {
-        include_install = true,
-        include_run = false,
-        node_version = local.effective_node_version,
-        runner_user = var.runner_user,
-        runner_dir = var.runner_dir,
-        runner_download_url = "https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz"
-      })
+        include_install         = true,
+        include_run             = false,
+        node_version            = local.effective_node_version,
+        runner_user             = var.runner_user,
+        runner_dir              = var.runner_dir,
+        enable_guest_attributes = var.enable_guest_attributes,
+        runner_download_url     = "https://github.com/actions/runner/releases/download/v${local.runner_version}/actions-runner-linux-x64-${local.runner_version}.tar.gz"
+    })
   }
 
   provisioner "shell" {
