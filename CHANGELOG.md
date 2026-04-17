@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.9.0](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.8...v0.9.0) (2026-04-17)
+
+
+### Features
+
+* add optional guest attributes for runner status tracking ([26e2a81](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/26e2a81b2db0c0fef416121b8885cc973eab7c82))
+
+
+### Bug Fixes
+
+* ensure failed runners are deregistered from github before deletion ([437f472](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/437f4729d28bda550f66edf79a29196ffde4ae7b))
+* improve startup script failure handeling ([c27dbc0](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/c27dbc004f179698bf6817339d6029e387fbce25))
+
 ## [0.8.8](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.7...v0.8.8) (2026-03-14)
 
 
