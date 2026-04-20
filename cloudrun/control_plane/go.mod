@@ -8,6 +8,7 @@ require (
 	cloud.google.com/go/secretmanager v1.19.0
 	github.com/bradleyfalzon/ghinstallation/v2 v2.18.0
 	github.com/google/go-github/v84 v84.0.0
+	github.com/google/go-github/v85 v85.0.0
 	github.com/sethvargo/go-envconfig v1.3.0
 	google.golang.org/api v0.276.0
 )
