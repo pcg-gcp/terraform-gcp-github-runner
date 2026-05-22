@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.3](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.9.2...v0.9.3) (2026-05-22)
+
+
+### Bug Fixes
+
+* Add Ubuntu 26.04 image template ([1be17fa](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/1be17faf6b8bd70b1c7432c35a832d8249ed97f2))
+* **Control Plane:** Improve error handeling for guest attributes ([c6d8ab7](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/c6d8ab739f47b6bf747691dcb04d635d4f51c732))
+
 ## [0.9.2](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.9.1...v0.9.2) (2026-05-22)
 
 
