@@ -7,11 +7,12 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"slices"
 	"time"
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 	taskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
-	"github.com/google/go-github/v84/github"
+	"github.com/google/go-github/v88/github"
 	"github.com/sethvargo/go-envconfig"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -176,14 +177,7 @@ func (s *GitHubEventMonitor) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func hasRequiredLabels(requiredLabels []string, runnerLabels []string) bool {
 	for _, requiredLabel := range requiredLabels {
-		hasLabel := false
-		for _, runnerLabel := range runnerLabels {
-			if requiredLabel == runnerLabel {
-				hasLabel = true
-				break
-			}
-		}
-		if !hasLabel {
+		if !slices.Contains(runnerLabels, requiredLabel) {
 			return false
 		}
 	}

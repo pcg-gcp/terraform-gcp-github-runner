@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/google/go-github/v84/github"
+	"github.com/google/go-github/v88/github"
 	"google.golang.org/api/compute/v1"
 )
 
@@ -184,14 +184,14 @@ func (c *Client) RemoveRunnerForInstance(instance *compute.Instance, ctx context
 func (c *Client) getInstallationID(runnerType, owner, repo string, ctx context.Context) (int64, error) {
 	switch runnerType {
 	case "repo":
-		installation, _, err := c.appsClient.Apps.FindRepositoryInstallation(ctx, owner, repo)
+		installation, _, err := c.appsClient.Apps.GetRepositoryInstallation(ctx, owner, repo)
 		if err != nil {
 			err = fmt.Errorf("failed to find installation: %w", err)
 			return 0, err
 		}
 		return installation.GetID(), nil
 	case "org":
-		installation, _, err := c.appsClient.Apps.FindOrganizationInstallation(ctx, owner)
+		installation, _, err := c.appsClient.Apps.GetOrganizationInstallation(ctx, owner)
 		if err != nil {
 			err = fmt.Errorf("failed to find installation: %w", err)
 			return 0, err
