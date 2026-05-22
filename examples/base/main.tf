@@ -24,7 +24,7 @@ module "github_runners" {
   ephemeral      = false
   use_jit_config = false
 
-  runner_image_path   = "projects/cw-td-sandbox/global/images/ubuntu-2404-ghr-20260417-083824"
+  runner_image_path   = "projects/cw-td-sandbox/global/images/ubuntu-2604-ghr-20260522-101229"
   runner_machine_type = "n4-standard-2"
   runner_disk_type    = "hyperdisk-balanced"
   webhook_secret      = random_id.id.hex
