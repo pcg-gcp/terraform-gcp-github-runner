@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"google.golang.org/api/compute/v1"
+	"google.golang.org/api/googleapi"
 )
 
 func (h *ControlPlaneHandler) StopRunner(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +66,14 @@ func (h *ControlPlaneHandler) processInstance(instance *compute.Instance, wg *sy
 		if h.cfg.EnableGuestAttributes {
 			status, err := h.gcpClient.GetGuestAttributes(instance.Name, zone, ctx)
 			if err != nil {
-				slog.Warn(fmt.Sprintf("Error getting guest attributes for instance %s: %v", instance.Name, err))
+				var apiErr *googleapi.Error
+				if errors.As(err, &apiErr) && apiErr.Code == http.StatusNotFound {
+					// 404 is expected during startup, log as debug to reduce clutter
+					slog.Debug(fmt.Sprintf("Guest attributes not found yet for instance %s (still starting up)", instance.Name))
+				} else {
+					// Unexpected error, log as warning
+					slog.Warn(fmt.Sprintf("Error getting guest attributes for instance %s: %v", instance.Name, err))
+				}
 			}
 
 			if status == "installing" || status == "configuring" {
