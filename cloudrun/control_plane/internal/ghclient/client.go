@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/google/go-github/v84/github"
+	"github.com/google/go-github/v88/github"
 	"github.com/pcg-gcp/terraform-gcp-github-runner/cloudrun/control_plane/internal/config"
 )
 
@@ -25,7 +25,10 @@ func NewClient(cfg *config.Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	appsClient := github.NewClient(&http.Client{Transport: itr})
+	appsClient, err := github.NewClient(github.WithTransport(itr))
+	if err != nil {
+		return nil, err
+	}
 
 	clients := make(map[int64]*github.Client)
 	return &Client{
@@ -44,7 +47,10 @@ func (c *Client) getClient(installationID int64) (*github.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	client := github.NewClient(&http.Client{Transport: itr})
+	client, err := github.NewClient(github.WithTransport(itr))
+	if err != nil {
+		return nil, err
+	}
 	c.clients[installationID] = client
 	return client, nil
 }
