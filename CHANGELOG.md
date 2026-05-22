@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.1](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.9.0...v0.9.1) (2026-05-22)
+
+
+### Miscellaneous Chores
+
+* release 0.9.0 ([6611fab](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/6611fabfddfe8a99360f1d2d4b1a87415a087e31))
+* release 0.9.1 ([dbfdd0b](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/dbfdd0bff5910d12f9cda83285760e35c926e2ff))
+
 ## [0.9.0](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.8.8...v0.9.0) (2026-04-17)
 
 
