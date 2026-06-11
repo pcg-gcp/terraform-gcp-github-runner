@@ -2,13 +2,11 @@
 
 ## [0.9.4](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.9.3...v0.9.4) (2026-06-11)
 
-
 ### Miscellaneous Chores
 
-* release 0.9.4 ([58032e4](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/58032e4c5441567d4789f00a20cf57cec5f17db5))
+* bump dependencies([e45b55f](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/e45b55fbb856707e9628d3f559ab03f2c535b287))
 
 ## [0.9.3](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.9.2...v0.9.3) (2026-05-22)
-
 
 ### Bug Fixes
 
@@ -16,7 +14,6 @@
 * **Control Plane:** Improve error handeling for guest attributes ([c6d8ab7](https://github.com/pcg-gcp/terraform-gcp-github-runner/commit/c6d8ab739f47b6bf747691dcb04d635d4f51c732))
 
 ## [0.9.2](https://github.com/pcg-gcp/terraform-gcp-github-runner/compare/v0.9.1...v0.9.2) (2026-05-22)
-
 
 ### Miscellaneous Chores
 
