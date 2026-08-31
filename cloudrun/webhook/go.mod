@@ -8,7 +8,7 @@ require (
 	cloud.google.com/go/cloudtasks v1.18.0
 	github.com/google/go-github/v88 v88.0.0
 	github.com/sethvargo/go-envconfig v1.3.0
-	google.golang.org/protobuf v1.36.11
+	google.golang.org/protobuf v1.36.12
 )
 
 require (
